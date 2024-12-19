@@ -34,6 +34,7 @@
   },
   "trustedDependencies": [
     "@biomejs/biome",
-    "@vercel/speed-insights"
+    "@vercel/speed-insights",
+    "sharp"
   ]
 }
