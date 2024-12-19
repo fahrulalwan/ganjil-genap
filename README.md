@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jakarta Even-Odd License Plate Policy Checker 🚗
 
-## Getting Started
+A web application that helps drivers in Jakarta check which roads they can access based on the even-odd license plate policy (Ganjil Genap). Built with Next.js.
 
-First, run the development server:
+## 🌟 Features
 
+- Interactive map visualization of Jakarta's even-odd policy zones
+- Real-time eligibility checking based on license plate numbers
+- Mobile-friendly responsive design
+- Up-to-date policy information
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18.x or later
+- npm or yarn package manager
+
+### Installation
+
+1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/fahrulalwan/ganjil-genap.git
+cd ganjil-genap
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies
+```bash
+bun install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Start the development server
+```bash
+bun run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The application will be available at [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+## 🛠️ Built With
 
-To learn more about Next.js, take a look at the following resources:
+- [Next.js](https://nextjs.org/) - React framework for production
+- [TypeScript](https://www.typescriptlang.org/) - For type-safe code
+<!-- - [Geist](https://vercel.com/font) - Modern font family by Vercel -->
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📖 About Jakarta's Even-Odd Policy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The even-odd (Ganjil Genap) policy is a traffic management system implemented in Jakarta to reduce congestion. Vehicles with license plates ending in:
+- Even numbers can only access certain roads on even-numbered dates
+- Odd numbers can only access certain roads on odd-numbered dates
 
-## Deploy on Vercel
+## 🤝 Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Contact
+
+If you have any questions or suggestions, please open an issue in this repository.
+
+---
+Built with ❤️ for Jakarta's drivers
