@@ -4,6 +4,9 @@ import '@maptiler/sdk/dist/maptiler-sdk.css';
 import { MapStyle } from '@maptiler/sdk';
 import { transformRequest } from '@/utils/mapUtils';
 
+// temporarily set api key to dummy key to remove the error
+mapTilerSDK.config.apiKey = 'abcdefghijklmnopqrstuvwxyz';
+
 interface MapProps {
   center: [number, number];
   heading: number;
@@ -12,6 +15,21 @@ interface MapProps {
 // Constants
 const DEFAULT_COORDINATES: [number, number] = [-6.2088, 106.8456]; // Jakarta coordinates
 const DEFAULT_ZOOM = 18;
+const DEFAULT_HEADING = 0;
+
+// Error messages
+const ERROR_MESSAGES = {
+  INITIALIZATION: 'Failed to initialize map',
+  LOAD_ERROR: 'Failed to load map. Please try refreshing the page.',
+  INVALID_COORDINATES: 'Invalid coordinates provided',
+  INVALID_HEADING: 'Invalid heading value provided',
+} as const;
+
+function logError(context: string, error: unknown) {
+  // Safe error logging that doesn't expose internal details
+  const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+  console.error(`[PreviewMap] ${context}: ${errorMessage}`);
+}
 
 function isValidLatitude(lat: number): boolean {
   return !Number.isNaN(lat) && lat >= -90 && lat <= 90;
@@ -21,20 +39,35 @@ function isValidLongitude(lng: number): boolean {
   return !Number.isNaN(lng) && lng >= -180 && lng <= 180;
 }
 
+function isValidHeading(heading: number): boolean {
+  return !Number.isNaN(heading) && Number.isFinite(heading);
+}
+
+function normalizeHeading(heading: number): number {
+  if (!isValidHeading(heading)) {
+    logError('Heading validation', new Error(ERROR_MESSAGES.INVALID_HEADING));
+    return DEFAULT_HEADING;
+  }
+  return ((heading % 360) + 360) % 360;
+}
+
 function validateAndTransformCoordinates(
   coords: [number, number],
 ): [number, number] {
   const [lat, lng] = coords;
   if (!isValidLatitude(lat) || !isValidLongitude(lng)) {
-    console.warn('Invalid coordinates provided, using default coordinates');
+    logError(
+      'Coordinate validation',
+      new Error(ERROR_MESSAGES.INVALID_COORDINATES),
+    );
     return DEFAULT_COORDINATES;
   }
-  return [lng, lat]; // MapTiler expects [lng, lat]
+  return [lng, lat];
 }
 
 export default function PreviewMap({
   center,
-  heading = 0,
+  heading = DEFAULT_HEADING,
 }: Readonly<MapProps>) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapTilerSDK.Map | null>(null);
@@ -44,13 +77,17 @@ export default function PreviewMap({
   const updateMarker = useCallback((coordinates: [number, number]) => {
     if (!map.current) return;
 
-    if (marker.current) {
-      marker.current.remove();
-    }
+    try {
+      if (marker.current) {
+        marker.current.remove();
+      }
 
-    marker.current = new mapTilerSDK.Marker()
-      .setLngLat(coordinates)
-      .addTo(map.current);
+      marker.current = new mapTilerSDK.Marker()
+        .setLngLat(coordinates)
+        .addTo(map.current);
+    } catch (error) {
+      logError('Marker update', error);
+    }
   }, []);
 
   useEffect(() => {
@@ -58,6 +95,7 @@ export default function PreviewMap({
 
     try {
       const validCoordinates = validateAndTransformCoordinates(center);
+      const validHeading = normalizeHeading(heading);
 
       map.current = new mapTilerSDK.Map({
         container: mapContainer.current,
@@ -65,15 +103,15 @@ export default function PreviewMap({
         center: validCoordinates,
         zoom: DEFAULT_ZOOM,
         pitch: 60,
-        bearing: heading,
+        bearing: validHeading,
         navigationControl: 'bottom-right',
         geolocateControl: 'bottom-right',
         transformRequest,
       });
 
       map.current.on('error', (error: Error) => {
-        console.error('Map error:', error);
-        setMapError('Failed to load map. Please try refreshing the page.');
+        logError('Map runtime', error);
+        setMapError(ERROR_MESSAGES.LOAD_ERROR);
       });
 
       map.current.on('load', () => {
@@ -81,18 +119,22 @@ export default function PreviewMap({
         updateMarker(validCoordinates);
       });
     } catch (error) {
-      console.error('Map initialization error:', error);
-      setMapError('Failed to initialize map');
+      logError('Map initialization', error);
+      setMapError(ERROR_MESSAGES.INITIALIZATION);
     }
 
     return () => {
-      if (marker.current) {
-        marker.current.remove();
-        marker.current = null;
-      }
-      if (map.current) {
-        map.current.remove();
-        map.current = null;
+      try {
+        if (marker.current) {
+          marker.current.remove();
+          marker.current = null;
+        }
+        if (map.current) {
+          map.current.remove();
+          map.current = null;
+        }
+      } catch (error) {
+        logError('Cleanup', error);
       }
     };
   }, [center, heading, updateMarker]);
