@@ -1,4 +1,4 @@
-# Jakarta Even-Odd License Plate Policy Checker 🚗
+# Jakarta Even-Odd License Plate Policy Map 🚗
 
 A web application that helps drivers in Jakarta check which roads they can access based on the even-odd license plate policy (Ganjil Genap). Built with Next.js.
 
@@ -40,7 +40,6 @@ The application will be available at [http://localhost:3000](http://localhost:30
 
 - [Next.js](https://nextjs.org/) - React framework for production
 - [TypeScript](https://www.typescriptlang.org/) - For type-safe code
-<!-- - [Geist](https://vercel.com/font) - Modern font family by Vercel -->
 
 ## 📖 About Jakarta's Even-Odd Policy
 
