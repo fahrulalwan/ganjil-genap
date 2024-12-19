@@ -58,7 +58,6 @@ export default function PreviewMap({
 
     try {
       const validCoordinates = validateAndTransformCoordinates(center);
-      mapTilerSDK.config.apiKey = 'dummy-key';
 
       map.current = new mapTilerSDK.Map({
         container: mapContainer.current,
