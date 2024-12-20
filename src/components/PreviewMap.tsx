@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as mapTilerSDK from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
-import { MapStyle } from '@maptiler/sdk';
+import { type LngLatBoundsLike, MapStyle } from '@maptiler/sdk';
 import { transformRequest } from '@/utils/mapUtils';
 
 // temporarily set api key to dummy key to remove the error
@@ -16,6 +16,16 @@ interface MapProps {
 const DEFAULT_COORDINATES: [number, number] = [-6.2088, 106.8456]; // Jakarta coordinates
 const DEFAULT_ZOOM = 18;
 const DEFAULT_HEADING = 0;
+
+/**
+ * TODO: Fine-tune these bounds to better cover Jakarta's Ganjil-Genap areas
+ * @see GitHub Issue: https://github.com/fahrulalwan/ganjil-genap/issues/2
+ */
+// Jakarta bounds including main surrounding areas
+const JABODETABEK_BOUNDS: LngLatBoundsLike = [
+  [106.6885, -6.3728], // Southwest (includes parts of Tangerang and South Jakarta)
+  [106.9873, -6.0805], // Northeast (includes parts of North Jakarta and Bekasi)
+] as const;
 
 // Error messages
 const ERROR_MESSAGES = {
@@ -106,6 +116,8 @@ export default function PreviewMap({
         bearing: validHeading,
         navigationControl: 'bottom-right',
         geolocateControl: 'bottom-right',
+        maxBounds: JABODETABEK_BOUNDS,
+        forceNoAttributionControl: true,
         transformRequest,
       });
 

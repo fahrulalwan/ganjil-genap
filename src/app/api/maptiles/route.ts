@@ -1,8 +1,20 @@
+import { RATE_LIMIT, isRateLimited } from '@/utils/rateLimit';
 import { type NextRequest, NextResponse } from 'next/server';
 
 // Allowed paths for the proxy
-const ALLOWED_PATHS = ['/maps', '/data', '/tiles', '/fonts'];
+const ALLOWED_PATHS = ['/maps', '/data', '/tiles', '/fonts'] as const;
 const MAX_PATH_LENGTH = 256; // Maximum allowed path length
+
+// Cache configuration based on content type
+const CACHE_CONFIG = {
+  TILES: {
+    VECTOR: 60 * 60 * 24 * 14, // 14 days for vector tiles
+    RASTER: 60 * 60 * 24 * 7,  // 7 days for raster tiles
+  },
+  FONTS: 60 * 60 * 24 * 30,    // 30 days for fonts (rarely change)
+  MAPS: 60 * 60,               // 1 hour for map data
+  DATA: 60 * 5,                // 5 minutes for dynamic data
+} as const;
 
 // Get User-Agent from npm environment variables
 function getUserAgent(): string {
@@ -30,12 +42,58 @@ function isValidPath(path: string): boolean {
   return true;
 }
 
+function getClientIp(request: NextRequest): string {
+  return request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown';
+}
+
+function getCacheDuration(path: string): number {
+  // Determine cache duration based on path and content type
+  if (path.startsWith('/fonts')) {
+    return CACHE_CONFIG.FONTS;
+  }
+  
+  if (path.startsWith('/tiles')) {
+    // Vector tiles typically have pbf or mvt extension
+    return path.endsWith('.pbf') || path.endsWith('.mvt')
+      ? CACHE_CONFIG.TILES.VECTOR
+      : CACHE_CONFIG.TILES.RASTER;
+  }
+  
+  if (path.startsWith('/maps')) {
+    return CACHE_CONFIG.MAPS;
+  }
+  
+  if (path.startsWith('/data')) {
+    return CACHE_CONFIG.DATA;
+  }
+  
+  // Default to short cache for unknown paths
+  return CACHE_CONFIG.DATA;
+}
+
 export async function GET(request: NextRequest) {
+  // Get client IP using the enhanced function
+  const ip = getClientIp(request);
+
+  // Check rate limit
+  if (isRateLimited(ip, 300)) {
+    console.warn(`[MapTilerProxy] Rate limit exceeded for IP: ${ip}`);
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { 
+        status: 429,
+        headers: {
+          'Retry-After': String(RATE_LIMIT.BLOCK_DURATION_MS / 1000),
+        }
+      }
+    );
+  }
+
   const apiKey = process.env.MAPTILER_API_KEY;
   
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'Internal server error' }, // Don't expose specific configuration issues
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -56,6 +114,10 @@ export async function GET(request: NextRequest) {
       headers: {
         'User-Agent': getUserAgent(),
       },
+      // Use Next.js built-in caching with specific durations
+      next: {
+        revalidate: getCacheDuration(path)
+      }
     });
     
     if (!response.ok) {
@@ -63,10 +125,15 @@ export async function GET(request: NextRequest) {
     }
 
     const contentType = response.headers.get('content-type') ?? '';
+    const cacheDuration = getCacheDuration(path);
     
     if (contentType.includes('application/json')) {
       const data = await response.json();
-      return NextResponse.json(data);
+      return NextResponse.json(data, {
+        headers: {
+          'cache-control': `public, max-age=${cacheDuration}`,
+        }
+      });
     }
     
     // For non-JSON responses (like images), return the raw response with proper content type
@@ -74,7 +141,7 @@ export async function GET(request: NextRequest) {
       status: response.status,
       headers: {
         'content-type': contentType,
-        'cache-control': 'public, max-age=1209600', // Cache static assets for 2 weeks
+        'cache-control': `public, max-age=${cacheDuration}`,
       },
     });
   } catch (error) {
