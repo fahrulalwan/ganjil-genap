@@ -1,0 +1,31 @@
+export const MAJOR_ROADS = {
+  pusat: [
+    'Jl. Gajah Mada',
+    'Jl. Hayam Wuruk',
+    'Jl. Majapahit',
+    'Jl. Medan Merdeka Barat',
+    'Jl. MH Thamrin',
+    'Jl. Jend. Sudirman',
+    'Jl. Balikpapan',
+    'Jl. Kyai Caringin',
+    'Jl. Salemba Raya (Barat & Timur)',
+    'Jl. Kramat Raya',
+    'Jl. Stasiun Senen',
+    'Jl. Gunung Sahari',
+  ],
+  selatan: [
+    'Jl. Sisingamangaraja',
+    'Jl. Panglima Polim',
+    'Jl. Fatmawati',
+    'Jl. Suryopranoto',
+    'Jl. Gatot Subroto',
+    'Jl. HR Rasuna Said',
+  ],
+  timur: [
+    'Jl. MT Haryono',
+    'Jl. DI Panjaitan',
+    'Jl. Jend. Ahmad Yani',
+    'Jl. Pramuka',
+  ],
+  barat: ['Jl. Pintu Besar Selatan', 'Jl. Tomang Raya', 'Jl. Jend. S Parman'],
+} as const; 

@@ -1,20 +1,23 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import type { FC, Ref } from 'react';
 
 interface AdSensePlaceholderProps {
   className?: string;
+  ref?: Ref<HTMLDivElement>;
 }
 
-export default function AdSensePlaceholder({
+const AdSensePlaceholder: FC<AdSensePlaceholderProps> = ({
   className = '',
-}: Readonly<AdSensePlaceholderProps>) {
+  ref,
+}) => {
   return (
-    <Card className={className}>
-      <CardContent className="p-4 text-center">
-        <p className="text-muted-foreground">AdSense Placeholder</p>
-        <p className="text-sm text-muted-foreground">
-          Ads will be displayed here based on your configuration
-        </p>
-      </CardContent>
-    </Card>
+    <div ref={ref} className={cn('p-4 text-center bg-background', className)}>
+      <p className="text-muted-foreground">AdSense Placeholder</p>
+      <p className="text-sm text-muted-foreground">
+        Ads will be displayed here based on your configuration
+      </p>
+    </div>
   );
-}
+};
+
+export default AdSensePlaceholder;

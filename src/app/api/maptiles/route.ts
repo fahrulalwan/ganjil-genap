@@ -2,7 +2,7 @@ import { RATE_LIMIT, isRateLimited } from '@/utils/rateLimit';
 import { type NextRequest, NextResponse } from 'next/server';
 
 // Allowed paths for the proxy
-const ALLOWED_PATHS = ['/maps', '/data', '/tiles', '/fonts'] as const;
+const ALLOWED_PATHS = ['/maps', '/data', '/tiles', '/fonts', '/geocoding'] as const;
 const MAX_PATH_LENGTH = 256; // Maximum allowed path length
 
 // Cache configuration based on content type
@@ -14,6 +14,7 @@ const CACHE_CONFIG = {
   FONTS: 60 * 60 * 24 * 30,    // 30 days for fonts (rarely change)
   MAPS: 60 * 60,               // 1 hour for map data
   DATA: 60 * 5,                // 5 minutes for dynamic data
+  GEOCODING: 60 * 30,          // 30 minutes for geocoding results
 } as const;
 
 // Get User-Agent from npm environment variables
@@ -65,6 +66,10 @@ function getCacheDuration(path: string): number {
   
   if (path.startsWith('/data')) {
     return CACHE_CONFIG.DATA;
+  }
+
+  if (path.startsWith('/geocoding')) {
+    return CACHE_CONFIG.GEOCODING;
   }
   
   // Default to short cache for unknown paths
