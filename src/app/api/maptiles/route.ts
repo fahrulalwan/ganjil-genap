@@ -126,6 +126,7 @@ export async function GET(request: NextRequest) {
     });
     
     if (!response.ok) {
+      console.error('[MapTilerProxy] Error:', response);
       throw new Error(`MapTiler API responded with status: ${response.status}`);
     }
 
