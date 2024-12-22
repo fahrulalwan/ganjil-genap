@@ -114,11 +114,20 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const userAgent = getUserAgent();
+
+    console.log('[MapTilerProxy] User Agent:', userAgent);
+    console.log('[MapTilerProxy] Origin:', {
+      'VERCEL_BRANCH_URL': process.env.VERCEL_BRANCH_URL,
+      'VERCEL_URL': process.env.VERCEL_URL,
+    });
+
     const maptilerUrl = `https://api.maptiler.com${path}${path.includes('?') ? '&' : '?'}key=${apiKey}`;
+    
     const response = await fetch(maptilerUrl, {
       headers: {
         'Origin': process.env.VERCEL_BRANCH_URL ?? process.env.VERCEL_URL as string,
-        'User-Agent': getUserAgent(),
+        'User-Agent': userAgent,
       },
       // Use Next.js built-in caching with specific durations
       next: {
