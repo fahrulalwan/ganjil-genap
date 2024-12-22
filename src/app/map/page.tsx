@@ -7,6 +7,7 @@ import {
   type FC,
   useRef,
   useMemo,
+  Suspense,
 } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,24 +26,14 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import PreviewMap from '@/components/PreviewMap';
 import AdSensePlaceholder from '@/components/AdSensePlaceholder';
 import {
   AlertCircle,
   AlertTriangle,
   Navigation,
-  Share,
   Info,
   RefreshCw,
-  Route,
   Signal,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -85,7 +76,32 @@ interface PolicyStatus {
   nextPeriod: 'mulai' | 'selesai';
 }
 
-const MapPage: FC = () => {
+const LoadingScreen: FC = () => {
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm">
+      <div className="flex flex-col items-center space-y-6">
+        <div className="relative w-20 h-20">
+          {/* Static ring */}
+          <div className="absolute inset-0 rounded-full border-[3px] border-blue-600/20 dark:border-blue-500/20" />
+          {/* Spinning gradient ring */}
+          <div className="absolute inset-0 rounded-full border-[3px] border-transparent dark:border-transparent [background:linear-gradient(white,white)_padding-box,linear-gradient(to_top,#2563eb_50%,transparent_0)_border-box] dark:[background:linear-gradient(#030712,#030712)_padding-box,linear-gradient(to_top,#3b82f6_50%,transparent_0)_border-box] animate-spin" />
+          {/* Navigation icon */}
+          <Navigation className="absolute inset-0 m-auto w-8 h-8 text-blue-600 dark:text-blue-500 animate-pulse" />
+        </div>
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+            Memuat Peta
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Mohon tunggu sebentar...
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MapContent: FC = () => {
   const searchParams = useSearchParams();
   const plateType = searchParams.get('plate') as PlateType;
   const [userLocation, setUserLocation] = useState<[number, number] | null>(
@@ -99,11 +115,21 @@ const MapPage: FC = () => {
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
   const lastLocation = useRef<[number, number] | null>(null);
   const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Update current time every minute
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Add a small delay to ensure smooth transition
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Memoize plate type validation
@@ -442,8 +468,12 @@ const MapPage: FC = () => {
   // Use destructured values from timeUntilChange
   const { hours, minutes, nextPeriod } = timeUntilChange;
 
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
-    <div className="flex flex-col min-h-screen relative">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-white via-blue-50/30 to-white dark:from-gray-900 dark:via-blue-950/30 dark:to-gray-900">
       {/* Main Map Section - Make it fill available space */}
       <section className="flex-1 relative">
         {userLocation ? (
@@ -452,15 +482,15 @@ const MapPage: FC = () => {
           </div>
         ) : (
           <div className="flex items-center justify-center h-full">
-            <p>Memuat peta...</p>
+            <p className="text-gray-600 dark:text-gray-400">Memuat peta...</p>
           </div>
         )}
 
-        {/* Floating Info Card - More compact for small screens */}
+        {/* Floating Info Card */}
         <div className="absolute top-2 left-2 right-2 md:right-auto md:left-4 md:top-4 md:w-[400px]">
-          <Card className="bg-background/95 backdrop-blur shadow-lg border-0">
+          <Card className="bg-background/95 backdrop-blur border-border dark:border-gray-800 shadow-lg">
             <CardContent className="p-2 space-y-2 md:p-4 md:space-y-4">
-              {/* Status Row - More compact */}
+              {/* Status Row */}
               <div className="flex flex-col gap-1 md:gap-2">
                 <div className="flex items-center gap-1.5">
                   <Badge
@@ -474,7 +504,10 @@ const MapPage: FC = () => {
                   </Badge>
                   <Badge
                     variant="secondary"
-                    className="rounded-full px-2.5 py-0.5 text-sm bg-neutral-100 hover:bg-neutral-100 text-neutral-900"
+                    className={cn(
+                      'rounded-full px-2.5 py-0.5 text-sm',
+                      'bg-neutral-100 hover:bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-800 dark:text-neutral-100',
+                    )}
                   >
                     Tgl {currentTime.getDate()}{' '}
                     <span
@@ -496,46 +529,52 @@ const MapPage: FC = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-6 w-6 p-0 md:h-8 md:w-8 ml-auto"
+                        className="h-6 w-6 p-0 md:h-8 md:w-8 ml-auto border-border dark:border-gray-800"
                       >
                         <Info className="w-3 h-3 md:w-4 md:h-4" />
                       </Button>
                     </SheetTrigger>
-                    <SheetContent className="overflow-y-auto">
+                    <SheetContent className="bg-background text-foreground border-border dark:border-gray-800">
                       <SheetHeader>
-                        <SheetTitle>Informasi Kebijakan</SheetTitle>
-                        <SheetDescription>
+                        <SheetTitle className="text-gray-900 dark:text-gray-100">
+                          Informasi Kebijakan
+                        </SheetTitle>
+                        <SheetDescription className="text-gray-600 dark:text-gray-400">
                           Detail pemberlakuan ganjil genap di lokasi Anda
                         </SheetDescription>
                       </SheetHeader>
-                      <div className="mt-6 space-y-6 pb-6">
+                      <div className="mt-6 space-y-6">
                         {/* Time Periods */}
                         <div className="space-y-4">
-                          <h4 className="text-sm font-semibold">
+                          <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                             Waktu Berlaku
                           </h4>
                           <div className="grid gap-4">
-                            <div className="bg-muted/50 p-3 rounded-lg space-y-2">
+                            <div className="bg-muted p-3 rounded-lg space-y-2">
                               <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-amber-500" />
-                                <span className="font-medium">Pagi</span>
+                                <span className="font-medium text-gray-900 dark:text-gray-100">
+                                  Pagi
+                                </span>
                               </div>
-                              <div className="text-2xl font-bold">
+                              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                 06:00 - 10:00
                               </div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-gray-600 dark:text-gray-400">
                                 Senin - Jumat (Hari Kerja)
                               </div>
                             </div>
-                            <div className="bg-muted/50 p-3 rounded-lg space-y-2">
+                            <div className="bg-muted p-3 rounded-lg space-y-2">
                               <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-blue-500" />
-                                <span className="font-medium">Sore</span>
+                                <span className="font-medium text-gray-900 dark:text-gray-100">
+                                  Sore
+                                </span>
                               </div>
-                              <div className="text-2xl font-bold">
+                              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                 16:00 - 21:00
                               </div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-gray-600 dark:text-gray-400">
                                 Senin - Jumat (Hari Kerja)
                               </div>
                             </div>
@@ -580,7 +619,7 @@ const MapPage: FC = () => {
                   </Sheet>
                 </div>
 
-                {/* Status Messages - More compact */}
+                {/* Status Messages */}
                 {(() => {
                   const status = statusInfo;
                   return (
@@ -613,7 +652,7 @@ const MapPage: FC = () => {
                 })()}
               </div>
 
-              {/* Location Row - More compact */}
+              {/* Location Row */}
               <HoverCard>
                 <HoverCardTrigger asChild>
                   <div className="flex items-center gap-1.5 p-1.5 bg-muted/50 rounded-lg cursor-pointer md:gap-2 md:p-2">
@@ -622,12 +661,12 @@ const MapPage: FC = () => {
                         'w-3.5 h-3.5 shrink-0 md:w-4 md:h-4',
                         isLoadingAddress
                           ? 'text-muted-foreground animate-pulse'
-                          : 'text-blue-500',
+                          : 'text-blue-600 dark:text-blue-400',
                         userLocation === DEFAULT_LOCATION && 'text-amber-500',
                       )}
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="truncate text-xs md:text-sm">
+                      <div className="truncate text-xs md:text-sm text-gray-900 dark:text-gray-100">
                         {isLoadingAddress ? (
                           <span className="text-muted-foreground">
                             Mencari alamat...
@@ -642,12 +681,12 @@ const MapPage: FC = () => {
                             className={cn(
                               'w-2.5 h-2.5 md:w-3 md:h-3',
                               gpsAccuracy <= 10
-                                ? 'text-green-500'
+                                ? 'text-green-500 dark:text-green-400'
                                 : gpsAccuracy <= 30
-                                  ? 'text-blue-500'
+                                  ? 'text-blue-500 dark:text-blue-400'
                                   : gpsAccuracy <= 50
-                                    ? 'text-yellow-500'
-                                    : 'text-red-500',
+                                    ? 'text-yellow-500 dark:text-yellow-400'
+                                    : 'text-red-500 dark:text-red-400',
                             )}
                           />
                           <span className="text-[10px] text-muted-foreground md:text-xs">
@@ -671,11 +710,13 @@ const MapPage: FC = () => {
                     </Button>
                   </div>
                 </HoverCardTrigger>
-                <HoverCardContent>
+                <HoverCardContent className="bg-background text-foreground border-border dark:border-gray-800">
                   <div className="space-y-3">
                     <div>
-                      <h4 className="font-medium">Detail Lokasi</h4>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                        Detail Lokasi
+                      </h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         {locationError || (
                           <>
                             GPS{' '}
@@ -686,12 +727,12 @@ const MapPage: FC = () => {
                                   className={cn(
                                     'font-medium',
                                     gpsAccuracy <= 10
-                                      ? 'text-green-500'
+                                      ? 'text-green-500 dark:text-green-400'
                                       : gpsAccuracy <= 30
-                                        ? 'text-blue-500'
+                                        ? 'text-blue-500 dark:text-blue-400'
                                         : gpsAccuracy <= 50
-                                          ? 'text-yellow-500'
-                                          : 'text-red-500',
+                                          ? 'text-yellow-500 dark:text-yellow-400'
+                                          : 'text-red-500 dark:text-red-400',
                                   )}
                                 >
                                   ±{Math.round(gpsAccuracy)}m
@@ -759,7 +800,7 @@ const MapPage: FC = () => {
                 </HoverCardContent>
               </HoverCard>
 
-              {/* Time Status - More compact */}
+              {/* Time Status */}
               <div className="flex flex-col bg-muted/50 rounded-lg overflow-hidden">
                 <div className="flex items-center justify-between p-1.5 md:p-2">
                   <div className="flex items-center gap-1.5">
@@ -770,19 +811,19 @@ const MapPage: FC = () => {
                           currentPeriod.color,
                         )}
                       />
-                      <span className="text-xs font-medium md:text-sm">
+                      <span className="text-xs font-medium md:text-sm text-gray-900 dark:text-gray-100">
                         {currentPeriod.label}
                       </span>
                     </div>
-                    <span className="text-xs text-muted-foreground md:text-sm">
+                    <span className="text-xs text-gray-600 dark:text-gray-400 md:text-sm">
                       {currentPeriod.time}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <span className="text-xs text-muted-foreground md:text-sm">
+                    <span className="text-xs text-gray-600 dark:text-gray-400 md:text-sm">
                       {nextPeriod === 'mulai' ? 'Mulai' : 'Selesai'}
                     </span>
-                    <span className="text-xs tabular-nums font-medium md:text-sm">
+                    <span className="text-xs tabular-nums font-medium md:text-sm text-gray-900 dark:text-gray-100">
                       {hours}j {minutes}m
                     </span>
                   </div>
@@ -792,9 +833,10 @@ const MapPage: FC = () => {
                     className={cn(
                       'h-full transition-all duration-1000 ease-linear',
                       {
-                        'bg-red-500': policyActive,
-                        'bg-amber-500': !policyActive && nextPeriod === 'mulai',
-                        'bg-emerald-500':
+                        'bg-red-500 dark:bg-red-400': policyActive,
+                        'bg-amber-500 dark:bg-amber-400':
+                          !policyActive && nextPeriod === 'mulai',
+                        'bg-emerald-500 dark:bg-emerald-400':
                           !policyActive && nextPeriod === 'selesai',
                       },
                     )}
@@ -805,103 +847,19 @@ const MapPage: FC = () => {
             </CardContent>
           </Card>
         </div>
-
-        {/* Quick Actions - Bottom - Responsive positioning and sizing */}
-        <div className="absolute bottom-2 left-2 right-2 md:bottom-4 md:right-4 md:left-auto md:w-auto">
-          <div className="flex justify-center gap-2 max-w-md mx-auto md:mx-0">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 md:flex-none bg-background/95 backdrop-blur h-8 md:h-10 md:px-4 md:min-w-[120px]"
-                >
-                  <Share className="w-4 h-4 mr-1.5" />
-                  <span className="text-xs md:text-sm">Bagikan</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Bagikan Lokasi</DialogTitle>
-                  <DialogDescription>
-                    Bagikan lokasi dan status ganjil genap saat ini
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="mt-6 space-y-6">
-                  {/* Share Preview */}
-                  <div className="bg-muted/50 p-4 rounded-lg space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant="secondary"
-                          className={cn(
-                            'rounded-full px-4 py-1 text-white',
-                            'bg-neutral-900 hover:bg-neutral-900 dark:bg-neutral-800',
-                          )}
-                        >
-                          Plat {plateType === 'even' ? 'Genap' : 'Ganjil'}
-                        </Badge>
-                        <Badge
-                          variant="secondary"
-                          className={cn(
-                            'rounded-full px-4 py-1 text-white',
-                            (currentTime.getDate() % 2 === 0 &&
-                              plateType === 'even') ||
-                              (currentTime.getDate() % 2 !== 0 &&
-                                plateType === 'odd')
-                              ? 'bg-emerald-500 hover:bg-emerald-500'
-                              : 'bg-red-500 hover:bg-red-500',
-                          )}
-                        >
-                          {policyActive ? 'Sedang Berlaku' : 'Tidak Berlaku'}
-                        </Badge>
-                      </div>
-                      <p className="text-sm">{streetAddress}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {nextPeriod === 'mulai'
-                          ? `Mulai berlaku dalam ${hours}j ${minutes}m`
-                          : `Selesai dalam ${hours}j ${minutes}m`}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Share Options */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline" className="w-full">
-                      <Share className="w-4 h-4 mr-2" />
-                      WhatsApp
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <Share className="w-4 h-4 mr-2" />
-                      Telegram
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <Share className="w-4 h-4 mr-2" />
-                      Copy Link
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <Share className="w-4 h-4 mr-2" />
-                      More
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 md:flex-none bg-background/95 backdrop-blur h-8 md:h-10 md:px-4 md:min-w-[120px]"
-            >
-              <Route className="w-4 h-4 mr-1.5" />
-              <span className="text-xs md:text-sm">Rute</span>
-            </Button>
-          </div>
-        </div>
       </section>
 
       {/* AdSense Footer */}
       <AdSensePlaceholder />
     </div>
+  );
+};
+
+const MapPage: FC = () => {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <MapContent />
+    </Suspense>
   );
 };
 
