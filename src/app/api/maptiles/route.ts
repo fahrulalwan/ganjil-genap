@@ -1,5 +1,6 @@
 import { RATE_LIMIT, isRateLimited } from '@/utils/rateLimit';
 import { type NextRequest, NextResponse } from 'next/server';
+import { name as packageName, version as packageVersion } from '../../../../package.json';
 
 // Allowed paths for the proxy
 const ALLOWED_PATHS = ['/maps', '/data', '/tiles', '/fonts', '/geocoding'] as const;
@@ -19,8 +20,8 @@ const CACHE_CONFIG = {
 
 // Get User-Agent from npm environment variables
 function getUserAgent(): string {
-  const name = process.env.npm_package_name ?? 'unknown';
-  const version = process.env.npm_package_version ?? '0.0.0';
+  const name = packageName ?? 'unknown';
+  const version = packageVersion ?? '0.0.0';
   return `${name}/${version} MapTilerProxy`;
 }
 
