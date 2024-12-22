@@ -117,6 +117,7 @@ export async function GET(request: NextRequest) {
     const maptilerUrl = `https://api.maptiler.com${path}${path.includes('?') ? '&' : '?'}key=${apiKey}`;
     const response = await fetch(maptilerUrl, {
       headers: {
+        'Origin': process.env.VERCEL_BRANCH_URL ?? process.env.VERCEL_URL as string,
         'User-Agent': getUserAgent(),
       },
       // Use Next.js built-in caching with specific durations
