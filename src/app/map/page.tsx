@@ -104,24 +104,160 @@ const LoadingScreen: FC = () => {
 const MapContent: FC = () => {
   const searchParams = useSearchParams();
   const plateType = searchParams.get('plate') as PlateType;
+  const [simulationEnabled, setSimulationEnabled] = useState(false);
+  const [simulatedTime, setSimulatedTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update current time every minute
+  useEffect(() => {
+    if (simulationEnabled) {
+      setCurrentTime(simulatedTime);
+      return;
+    }
+
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, [simulationEnabled, simulatedTime]);
+
+  // Add simulation controls
+  const handleTimeChange = (
+    hours: number,
+    minutes: number,
+    dayOffset: number = 0,
+  ) => {
+    const newTime = new Date();
+    // Set to next Saturday if dayOffset is 6, or next Sunday if 7
+    if (dayOffset === 6 || dayOffset === 7) {
+      const currentDay = newTime.getDay();
+      const daysUntilWeekend = dayOffset - currentDay;
+      newTime.setDate(
+        newTime.getDate() +
+          (daysUntilWeekend > 0 ? daysUntilWeekend : daysUntilWeekend + 7),
+      );
+    }
+    newTime.setHours(hours);
+    newTime.setMinutes(minutes);
+    setSimulatedTime(newTime);
+  };
+
+  const simulationControls = (
+    <div className="absolute bottom-24 left-2 right-2 md:right-auto md:left-4 md:w-[400px] bg-background/95 backdrop-blur p-4 rounded-lg border border-border dark:border-gray-800 shadow-lg space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium">Time Simulation</h3>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setSimulationEnabled(!simulationEnabled);
+            setCurrentTime(simulationEnabled ? new Date() : simulatedTime);
+          }}
+        >
+          {simulationEnabled ? 'Disable' : 'Enable'} Simulation
+        </Button>
+      </div>
+      {simulationEnabled && (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="text-xs font-medium text-muted-foreground mb-1">
+              Morning Policy (06:00-10:00)
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Button size="sm" onClick={() => handleTimeChange(8, 0)}>
+                During (8:00)
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(9, 45)}>
+                Ending Soon (9:45)
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(5, 15)}>
+                Starting Soon (5:15)
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(4, 0)}>
+                Before (4:00)
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="text-xs font-medium text-muted-foreground mb-1">
+              Between Policies
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Button size="sm" onClick={() => handleTimeChange(10, 15)}>
+                After Morning (10:15)
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(12, 0)}>
+                Midday (12:00)
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(14, 0)}>
+                Before Evening (14:00)
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(11, 30)}>
+                Late Morning (11:30)
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="text-xs font-medium text-muted-foreground mb-1">
+              Evening Policy (16:00-21:00)
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Button size="sm" onClick={() => handleTimeChange(17, 0)}>
+                During (17:00)
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(20, 45)}>
+                Ending Soon (20:45)
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(15, 15)}>
+                Starting Soon (15:15)
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(22, 0)}>
+                After (22:00)
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="text-xs font-medium text-muted-foreground mb-1">
+              Weekend (No Policy)
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Button size="sm" onClick={() => handleTimeChange(8, 0, 6)}>
+                Saturday 8:00
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(17, 0, 6)}>
+                Saturday 17:00
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(8, 0, 7)}>
+                Sunday 8:00
+              </Button>
+              <Button size="sm" onClick={() => handleTimeChange(17, 0, 7)}>
+                Sunday 17:00
+              </Button>
+            </div>
+          </div>
+
+          <div className="text-xs text-center text-muted-foreground">
+            Current Time:{' '}
+            {currentTime.toLocaleDateString('id-ID', { weekday: 'long' })}{' '}
+            {currentTime.toLocaleTimeString()}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   const [userLocation, setUserLocation] = useState<[number, number] | null>(
     null,
   );
   const [userHeading, setUserHeading] = useState<number | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [streetAddress, setStreetAddress] = useState<string>('Inisialisasi...');
   const [isLoadingAddress, setIsLoadingAddress] = useState(false);
   const lastLocation = useRef<[number, number] | null>(null);
   const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Update current time every minute
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(timer);
-  }, []);
 
   // Add a small delay to ensure smooth transition
   useEffect(() => {
@@ -255,8 +391,8 @@ const MapContent: FC = () => {
     }
 
     const isPlateAllowed =
-      (currentTime.getDate() % 2 === 0 && plateType === 'odd') ||
-      (currentTime.getDate() % 2 !== 0 && plateType === 'even');
+      (currentTime.getDate() % 2 === 0 && plateType === 'even') ||
+      (currentTime.getDate() % 2 !== 0 && plateType === 'odd');
 
     // Active policy period
     if (policyActive) {
@@ -848,6 +984,9 @@ const MapContent: FC = () => {
           </Card>
         </div>
       </section>
+
+      {/* Add simulation controls before AdSense Footer */}
+      {simulationControls}
 
       {/* AdSense Footer */}
       <AdSensePlaceholder />
