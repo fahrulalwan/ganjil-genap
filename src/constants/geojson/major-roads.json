@@ -1,0 +1,835 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Gajah Mada",
+        "region": "pusat",
+        "description": "Major commercial road in Central Jakarta",
+        "length": 2.1,
+        "startPoint": "Harmoni Central Busway",
+        "endPoint": "Glodok Plaza",
+        "intersections": [
+          "Jl. Hayam Wuruk",
+          "Jl. Pintu Besar Selatan"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Harmoni intersection", "coordinates": [106.8255, -6.1661]},
+          {"name": "Glodok intersection", "coordinates": [106.8199, -6.1733]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8255, -6.1661],
+          [106.8248, -6.1670],
+          [106.8241, -6.1679],
+          [106.8234, -6.1688],
+          [106.8227, -6.1697],
+          [106.8220, -6.1706],
+          [106.8213, -6.1715],
+          [106.8206, -6.1724],
+          [106.8199, -6.1733],
+          [106.8192, -6.1742]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. MH Thamrin",
+        "region": "pusat",
+        "description": "Major business district road in Central Jakarta's Golden Triangle",
+        "length": 3.4,
+        "startPoint": "Bundaran HI (Hotel Indonesia Roundabout)",
+        "endPoint": "Monas (National Monument)",
+        "intersections": [
+          "Jl. Medan Merdeka Barat",
+          "Jl. Kebon Kacang Raya"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Bundaran HI", "coordinates": [106.8238, -6.1950]},
+          {"name": "Sarinah", "coordinates": [106.8226, -6.1840]},
+          {"name": "Monas intersection", "coordinates": [106.8223, -6.1810]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8238, -6.1950],
+          [106.8236, -6.1940],
+          [106.8235, -6.1930],
+          [106.8234, -6.1920],
+          [106.8233, -6.1910],
+          [106.8232, -6.1900],
+          [106.8231, -6.1890],
+          [106.8230, -6.1880],
+          [106.8229, -6.1870],
+          [106.8228, -6.1860],
+          [106.8227, -6.1850],
+          [106.8226, -6.1840],
+          [106.8225, -6.1830],
+          [106.8224, -6.1820],
+          [106.8223, -6.1810],
+          [106.8222, -6.1800]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Jend. Sudirman",
+        "region": "pusat",
+        "description": "Jakarta's main business district avenue connecting Central and South Jakarta",
+        "length": 6.7,
+        "startPoint": "Bundaran HI (Hotel Indonesia Roundabout)",
+        "endPoint": "Semanggi Interchange",
+        "intersections": [
+          "Jl. Gatot Subroto",
+          "Jl. HR Rasuna Said",
+          "Jl. Sisingamangaraja"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Bundaran HI", "coordinates": [106.8238, -6.1950]},
+          {"name": "Bendungan Hilir", "coordinates": [106.8220, -6.2010]},
+          {"name": "Karet", "coordinates": [106.8211, -6.2040]},
+          {"name": "Setiabudi", "coordinates": [106.8202, -6.2070]},
+          {"name": "Dukuh Atas", "coordinates": [106.8193, -6.2100]},
+          {"name": "SCBD", "coordinates": [106.8184, -6.2130]},
+          {"name": "Senayan", "coordinates": [106.8175, -6.2160]},
+          {"name": "Semanggi", "coordinates": [106.8166, -6.2190]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8238, -6.1950],
+          [106.8235, -6.1960],
+          [106.8232, -6.1970],
+          [106.8229, -6.1980],
+          [106.8226, -6.1990],
+          [106.8223, -6.2000],
+          [106.8220, -6.2010],
+          [106.8217, -6.2020],
+          [106.8214, -6.2030],
+          [106.8211, -6.2040],
+          [106.8208, -6.2050],
+          [106.8205, -6.2060],
+          [106.8202, -6.2070],
+          [106.8199, -6.2080],
+          [106.8196, -6.2090],
+          [106.8193, -6.2100],
+          [106.8190, -6.2110],
+          [106.8187, -6.2120],
+          [106.8184, -6.2130],
+          [106.8181, -6.2140],
+          [106.8178, -6.2150],
+          [106.8175, -6.2160],
+          [106.8172, -6.2170],
+          [106.8169, -6.2180],
+          [106.8166, -6.2190],
+          [106.8163, -6.2200]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Gatot Subroto",
+        "region": "selatan",
+        "description": "Major arterial road connecting West and South Jakarta",
+        "length": 7.3,
+        "startPoint": "Semanggi Interchange",
+        "endPoint": "Grogol",
+        "intersections": [
+          "Jl. Jend. Sudirman",
+          "Jl. HR Rasuna Said",
+          "Jl. MT Haryono"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Semanggi", "coordinates": [106.8166, -6.2190]},
+          {"name": "Kuningan", "coordinates": [106.8136, -6.2205]},
+          {"name": "Pancoran", "coordinates": [106.8106, -6.2220]},
+          {"name": "Tebet", "coordinates": [106.8076, -6.2235]},
+          {"name": "Grogol", "coordinates": [106.8046, -6.2250]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8166, -6.2190],
+          [106.8156, -6.2195],
+          [106.8146, -6.2200],
+          [106.8136, -6.2205],
+          [106.8126, -6.2210],
+          [106.8116, -6.2215],
+          [106.8106, -6.2220],
+          [106.8096, -6.2225],
+          [106.8086, -6.2230],
+          [106.8076, -6.2235],
+          [106.8066, -6.2240],
+          [106.8056, -6.2245],
+          [106.8046, -6.2250]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Hayam Wuruk",
+        "region": "pusat",
+        "description": "Major commercial road parallel to Gajah Mada",
+        "length": 2.3,
+        "startPoint": "Glodok Plaza",
+        "endPoint": "Harmoni",
+        "intersections": [
+          "Jl. Gajah Mada",
+          "Jl. Pintu Besar Selatan"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Glodok Plaza", "coordinates": [106.8185, -6.1595]},
+          {"name": "Mangga Besar", "coordinates": [106.8175, -6.1520]},
+          {"name": "Harmoni", "coordinates": [106.8165, -6.1480]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8185, -6.1595],
+          [106.8183, -6.1580],
+          [106.8181, -6.1565],
+          [106.8179, -6.1550],
+          [106.8177, -6.1535],
+          [106.8175, -6.1520],
+          [106.8173, -6.1505],
+          [106.8171, -6.1490],
+          [106.8165, -6.1480]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Majapahit",
+        "region": "pusat",
+        "description": "Historical road connecting Harmoni to Pasar Baru",
+        "length": 1.8,
+        "startPoint": "Harmoni",
+        "endPoint": "Pasar Baru",
+        "intersections": [
+          "Jl. Gajah Mada",
+          "Jl. Medan Merdeka Barat"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Harmoni", "coordinates": [106.8165, -6.1480]},
+          {"name": "Sawah Besar", "coordinates": [106.8145, -6.1460]},
+          {"name": "Pasar Baru", "coordinates": [106.8125, -6.1440]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8165, -6.1480],
+          [106.8160, -6.1475],
+          [106.8155, -6.1470],
+          [106.8150, -6.1465],
+          [106.8145, -6.1460],
+          [106.8140, -6.1455],
+          [106.8135, -6.1450],
+          [106.8130, -6.1445],
+          [106.8125, -6.1440]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Medan Merdeka Barat",
+        "region": "pusat",
+        "description": "Presidential palace complex western perimeter road",
+        "length": 1.5,
+        "startPoint": "Monas",
+        "endPoint": "Harmoni",
+        "intersections": [
+          "Jl. MH Thamrin",
+          "Jl. Majapahit"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Monas", "coordinates": [106.8222, -6.1800]},
+          {"name": "Istana Merdeka", "coordinates": [106.8200, -6.1700]},
+          {"name": "Harmoni", "coordinates": [106.8165, -6.1480]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8222, -6.1800],
+          [106.8215, -6.1750],
+          [106.8208, -6.1725],
+          [106.8200, -6.1700],
+          [106.8190, -6.1650],
+          [106.8180, -6.1600],
+          [106.8170, -6.1550],
+          [106.8165, -6.1480]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Balikpapan",
+        "region": "pusat",
+        "description": "Commercial district road in Central Jakarta",
+        "length": 1.2,
+        "startPoint": "Sawah Besar",
+        "endPoint": "Mangga Besar",
+        "intersections": [
+          "Jl. Hayam Wuruk",
+          "Jl. Majapahit"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Sawah Besar", "coordinates": [106.8145, -6.1460]},
+          {"name": "Mangga Besar", "coordinates": [106.8175, -6.1520]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8145, -6.1460],
+          [106.8150, -6.1470],
+          [106.8155, -6.1480],
+          [106.8160, -6.1490],
+          [106.8165, -6.1500],
+          [106.8170, -6.1510],
+          [106.8175, -6.1520]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Kyai Caringin",
+        "region": "pusat",
+        "description": "Commercial and residential road in West Jakarta",
+        "length": 1.8,
+        "startPoint": "Tomang",
+        "endPoint": "Duri",
+        "intersections": [
+          "Jl. Tomang Raya",
+          "Jl. Jembatan Besi"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Tomang", "coordinates": [106.7985, -6.1680]},
+          {"name": "Jembatan Besi", "coordinates": [106.7965, -6.1620]},
+          {"name": "Duri", "coordinates": [106.7945, -6.1560]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.7985, -6.1680],
+          [106.7980, -6.1660],
+          [106.7975, -6.1640],
+          [106.7965, -6.1620],
+          [106.7955, -6.1600],
+          [106.7945, -6.1560]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Salemba Raya",
+        "region": "pusat",
+        "description": "Major educational and healthcare district road",
+        "length": 2.5,
+        "startPoint": "Senen",
+        "endPoint": "Matraman",
+        "intersections": [
+          "Jl. Kramat Raya",
+          "Jl. Pramuka"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Senen", "coordinates": [106.8420, -6.1850]},
+          {"name": "UI Salemba", "coordinates": [106.8480, -6.1920]},
+          {"name": "RSCM", "coordinates": [106.8500, -6.1950]},
+          {"name": "Matraman", "coordinates": [106.8520, -6.2000]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8420, -6.1850],
+          [106.8440, -6.1870],
+          [106.8460, -6.1890],
+          [106.8480, -6.1920],
+          [106.8490, -6.1935],
+          [106.8500, -6.1950],
+          [106.8510, -6.1975],
+          [106.8520, -6.2000]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Kramat Raya",
+        "region": "pusat",
+        "description": "Historical and commercial road in Central Jakarta",
+        "length": 2.2,
+        "startPoint": "Senen",
+        "endPoint": "Sarinah",
+        "intersections": [
+          "Jl. Salemba Raya",
+          "Jl. MH Thamrin"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Senen", "coordinates": [106.8420, -6.1850]},
+          {"name": "Kramat", "coordinates": [106.8380, -6.1830]},
+          {"name": "Sarinah", "coordinates": [106.8226, -6.1840]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8420, -6.1850],
+          [106.8400, -6.1840],
+          [106.8380, -6.1830],
+          [106.8360, -6.1835],
+          [106.8340, -6.1837],
+          [106.8320, -6.1838],
+          [106.8300, -6.1839],
+          [106.8280, -6.1840],
+          [106.8260, -6.1840],
+          [106.8226, -6.1840]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Stasiun Senen",
+        "region": "pusat",
+        "description": "Major transportation hub road",
+        "length": 1.0,
+        "startPoint": "Senen Station",
+        "endPoint": "Kramat",
+        "intersections": [
+          "Jl. Kramat Raya",
+          "Jl. Salemba Raya"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Stasiun Senen", "coordinates": [106.8450, -6.1750]},
+          {"name": "Pasar Senen", "coordinates": [106.8435, -6.1800]},
+          {"name": "Kramat", "coordinates": [106.8420, -6.1850]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8450, -6.1750],
+          [106.8445, -6.1775],
+          [106.8440, -6.1800],
+          [106.8435, -6.1800],
+          [106.8430, -6.1825],
+          [106.8420, -6.1850]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Gunung Sahari",
+        "region": "pusat",
+        "description": "Major commercial and industrial road",
+        "length": 3.5,
+        "startPoint": "Ancol",
+        "endPoint": "Senen",
+        "intersections": [
+          "Jl. Stasiun Senen",
+          "Jl. Mangga Dua"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Ancol", "coordinates": [106.8350, -6.1350]},
+          {"name": "Mangga Dua", "coordinates": [106.8400, -6.1500]},
+          {"name": "Senen", "coordinates": [106.8450, -6.1750]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8350, -6.1350],
+          [106.8360, -6.1400],
+          [106.8370, -6.1450],
+          [106.8400, -6.1500],
+          [106.8410, -6.1550],
+          [106.8420, -6.1600],
+          [106.8430, -6.1650],
+          [106.8440, -6.1700],
+          [106.8450, -6.1750]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Sisingamangaraja",
+        "region": "selatan",
+        "description": "Major arterial road in South Jakarta",
+        "length": 3.2,
+        "startPoint": "Semanggi",
+        "endPoint": "Kebayoran Baru",
+        "intersections": [
+          "Jl. Jend. Sudirman",
+          "Jl. Panglima Polim"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Semanggi", "coordinates": [106.8166, -6.2190]},
+          {"name": "Kebayoran", "coordinates": [106.8150, -6.2400]},
+          {"name": "Blok M", "coordinates": [106.8130, -6.2450]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8166, -6.2190],
+          [106.8160, -6.2250],
+          [106.8155, -6.2300],
+          [106.8150, -6.2400],
+          [106.8140, -6.2425],
+          [106.8130, -6.2450]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Panglima Polim",
+        "region": "selatan",
+        "description": "Commercial and residential road in South Jakarta",
+        "length": 2.1,
+        "startPoint": "Kebayoran Baru",
+        "endPoint": "Melawai",
+        "intersections": [
+          "Jl. Sisingamangaraja",
+          "Jl. Fatmawati"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Kebayoran Baru", "coordinates": [106.8150, -6.2400]},
+          {"name": "Polim", "coordinates": [106.8130, -6.2500]},
+          {"name": "Melawai", "coordinates": [106.8110, -6.2550]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8150, -6.2400],
+          [106.8140, -6.2450],
+          [106.8130, -6.2500],
+          [106.8120, -6.2525],
+          [106.8110, -6.2550]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Fatmawati",
+        "region": "selatan",
+        "description": "Major commercial road in South Jakarta",
+        "length": 4.5,
+        "startPoint": "Cipete",
+        "endPoint": "Pondok Indah",
+        "intersections": [
+          "Jl. Panglima Polim",
+          "Jl. RS Fatmawati"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Cipete", "coordinates": [106.8000, -6.2700]},
+          {"name": "RS Fatmawati", "coordinates": [106.7950, -6.2750]},
+          {"name": "Pondok Indah", "coordinates": [106.7850, -6.2800]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8000, -6.2700],
+          [106.7975, -6.2725],
+          [106.7950, -6.2750],
+          [106.7925, -6.2775],
+          [106.7900, -6.2785],
+          [106.7875, -6.2790],
+          [106.7850, -6.2800]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. HR Rasuna Said",
+        "region": "selatan",
+        "description": "Major business district road in South Jakarta",
+        "length": 3.8,
+        "startPoint": "Kuningan",
+        "endPoint": "Casablanca",
+        "intersections": [
+          "Jl. Gatot Subroto",
+          "Jl. Jend. Sudirman"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Kuningan", "coordinates": [106.8136, -6.2205]},
+          {"name": "Setiabudi", "coordinates": [106.8150, -6.2300]},
+          {"name": "Casablanca", "coordinates": [106.8200, -6.2400]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8136, -6.2205],
+          [106.8140, -6.2250],
+          [106.8150, -6.2300],
+          [106.8160, -6.2325],
+          [106.8170, -6.2350],
+          [106.8180, -6.2375],
+          [106.8200, -6.2400]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. MT Haryono",
+        "region": "timur",
+        "description": "Major arterial road in East Jakarta",
+        "length": 5.2,
+        "startPoint": "Cawang",
+        "endPoint": "Tebet",
+        "intersections": [
+          "Jl. DI Panjaitan",
+          "Jl. Gatot Subroto"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Cawang", "coordinates": [106.8600, -6.2400]},
+          {"name": "Tebet", "coordinates": [106.8500, -6.2300]},
+          {"name": "Pancoran", "coordinates": [106.8400, -6.2200]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8600, -6.2400],
+          [106.8550, -6.2350],
+          [106.8500, -6.2300],
+          [106.8450, -6.2250],
+          [106.8400, -6.2200]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. DI Panjaitan",
+        "region": "timur",
+        "description": "Major road connecting East Jakarta",
+        "length": 4.8,
+        "startPoint": "Jatinegara",
+        "endPoint": "Cawang",
+        "intersections": [
+          "Jl. MT Haryono",
+          "Jl. Jend. Ahmad Yani"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Jatinegara", "coordinates": [106.8700, -6.2150]},
+          {"name": "Cipinang", "coordinates": [106.8650, -6.2250]},
+          {"name": "Cawang", "coordinates": [106.8600, -6.2400]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8700, -6.2150],
+          [106.8675, -6.2200],
+          [106.8650, -6.2250],
+          [106.8625, -6.2325],
+          [106.8600, -6.2400]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Jend. Ahmad Yani",
+        "region": "timur",
+        "description": "Major commercial road in East Jakarta",
+        "length": 3.9,
+        "startPoint": "Bekasi Barat",
+        "endPoint": "Cempaka Putih",
+        "intersections": [
+          "Jl. DI Panjaitan",
+          "Jl. Pramuka"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Bekasi Barat", "coordinates": [106.8800, -6.2100]},
+          {"name": "Klender", "coordinates": [106.8750, -6.2000]},
+          {"name": "Cempaka Putih", "coordinates": [106.8700, -6.1900]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8800, -6.2100],
+          [106.8775, -6.2050],
+          [106.8750, -6.2000],
+          [106.8725, -6.1950],
+          [106.8700, -6.1900]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Pramuka",
+        "region": "timur",
+        "description": "Major road connecting Central and East Jakarta",
+        "length": 3.2,
+        "startPoint": "Matraman",
+        "endPoint": "Cempaka Putih",
+        "intersections": [
+          "Jl. Salemba Raya",
+          "Jl. Jend. Ahmad Yani"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Matraman", "coordinates": [106.8520, -6.2000]},
+          {"name": "Utan Kayu", "coordinates": [106.8600, -6.1950]},
+          {"name": "Cempaka Putih", "coordinates": [106.8700, -6.1900]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8520, -6.2000],
+          [106.8560, -6.1975],
+          [106.8600, -6.1950],
+          [106.8650, -6.1925],
+          [106.8700, -6.1900]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Pintu Besar Selatan",
+        "region": "barat",
+        "description": "Historical road in West Jakarta's old town",
+        "length": 1.5,
+        "startPoint": "Kota Tua",
+        "endPoint": "Glodok",
+        "intersections": [
+          "Jl. Gajah Mada",
+          "Jl. Hayam Wuruk"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Kota Tua", "coordinates": [106.8130, -6.1350]},
+          {"name": "Glodok", "coordinates": [106.8185, -6.1595]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8130, -6.1350],
+          [106.8145, -6.1425],
+          [106.8160, -6.1500],
+          [106.8175, -6.1550],
+          [106.8185, -6.1595]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Tomang Raya",
+        "region": "barat",
+        "description": "Major road connecting West Jakarta",
+        "length": 2.8,
+        "startPoint": "Grogol",
+        "endPoint": "Slipi",
+        "intersections": [
+          "Jl. Kyai Caringin",
+          "Jl. Jend. S Parman"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Grogol", "coordinates": [106.7900, -6.1650]},
+          {"name": "Tomang", "coordinates": [106.7985, -6.1680]},
+          {"name": "Slipi", "coordinates": [106.8050, -6.1900]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.7900, -6.1650],
+          [106.7950, -6.1665],
+          [106.7985, -6.1680],
+          [106.8000, -6.1750],
+          [106.8025, -6.1825],
+          [106.8050, -6.1900]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jl. Jend. S Parman",
+        "region": "barat",
+        "description": "Major business district road in West Jakarta",
+        "length": 3.5,
+        "startPoint": "Slipi",
+        "endPoint": "Grogol",
+        "intersections": [
+          "Jl. Tomang Raya",
+          "Jl. Gatot Subroto"
+        ],
+        "restrictions": ["Ganjil-Genap on weekdays 06:00-10:00 and 16:00-21:00"],
+        "landmarks": [
+          {"name": "Slipi", "coordinates": [106.8050, -6.1900]},
+          {"name": "Taman Anggrek", "coordinates": [106.7925, -6.1800]},
+          {"name": "Grogol", "coordinates": [106.7900, -6.1650]}
+        ]
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [106.8050, -6.1900],
+          [106.8000, -6.1850],
+          [106.7950, -6.1825],
+          [106.7925, -6.1800],
+          [106.7915, -6.1725],
+          [106.7900, -6.1650]
+        ]
+      }
+    }
+  ]
+} 
