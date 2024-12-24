@@ -422,7 +422,9 @@ const MapContent: FC = () => {
           <AlertTriangle className="w-4 h-4" />
         ),
         message: isPlateAllowed ? 'Bebas melintas' : 'Dilarang melintas',
-        subMessage: isPlateAllowed ? null : 'Gunakan rute alternatif',
+        subMessage: isPlateAllowed
+          ? `Sesuai aturan plat ${plateType === 'even' ? 'genap' : 'ganjil'}`
+          : 'Gunakan rute alternatif',
         type: isPlateAllowed ? ('success' as const) : ('error' as const),
       };
     }
@@ -441,7 +443,7 @@ const MapContent: FC = () => {
         ),
         message: 'Bebas melintas',
         subMessage: isPlateAllowed
-          ? null
+          ? `Pembatasan plat ${plateType === 'even' ? 'ganjil' : 'genap'} dalam ${timeUntilChange.minutes}m`
           : `${timeUntilChange.minutes}m menuju pembatasan`,
         type: isPlateAllowed ? ('success' as const) : ('warning' as const),
       };
