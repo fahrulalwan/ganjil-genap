@@ -9,13 +9,11 @@ mapTilerSDK.config.apiKey = 'abcdefghijklmnopqrstuvwxyz';
 
 interface MapProps {
   center: [number, number];
-  heading: number;
 }
 
 // Constants
 const DEFAULT_COORDINATES: [number, number] = [-6.2088, 106.8456]; // Jakarta coordinates
 const DEFAULT_ZOOM = 18;
-const DEFAULT_HEADING = 0;
 
 /**
  * TODO: Fine-tune these bounds to better cover Jakarta's Ganjil-Genap areas
@@ -32,7 +30,6 @@ const ERROR_MESSAGES = {
   INITIALIZATION: 'Failed to initialize map',
   LOAD_ERROR: 'Failed to load map. Please try refreshing the page.',
   INVALID_COORDINATES: 'Invalid coordinates provided',
-  INVALID_HEADING: 'Invalid heading value provided',
 } as const;
 
 function logError(context: string, error: unknown) {
@@ -49,87 +46,82 @@ function isValidLongitude(lng: number): boolean {
   return !Number.isNaN(lng) && lng >= -180 && lng <= 180;
 }
 
-function isValidHeading(heading: number): boolean {
-  return !Number.isNaN(heading) && Number.isFinite(heading);
-}
-
-function normalizeHeading(heading: number): number {
-  if (!isValidHeading(heading)) {
-    logError('Heading validation', new Error(ERROR_MESSAGES.INVALID_HEADING));
-    return DEFAULT_HEADING;
-  }
-  return ((heading % 360) + 360) % 360;
-}
-
-function validateAndTransformCoordinates(
-  coords: [number, number],
-): [number, number] {
-  const [lat, lng] = coords;
-  if (!isValidLatitude(lat) || !isValidLongitude(lng)) {
-    logError(
-      'Coordinate validation',
-      new Error(ERROR_MESSAGES.INVALID_COORDINATES),
-    );
-    return DEFAULT_COORDINATES;
-  }
-  return [lng, lat];
-}
-
-export default function PreviewMap({
-  center,
-  heading = DEFAULT_HEADING,
-}: Readonly<MapProps>) {
+export default function PreviewMap({ center }: Readonly<MapProps>) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapTilerSDK.Map | null>(null);
-  const marker = useRef<mapTilerSDK.Marker | null>(null);
+  const geolocateControl = useRef<mapTilerSDK.GeolocateControl | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
 
-  const updateMarker = useCallback((coordinates: [number, number]) => {
-    if (!map.current) return;
+  // Helper function to initialize map
+  const initializeMap = useCallback((coordinates: [number, number]) => {
+    if (!mapContainer.current) return;
 
-    try {
-      if (marker.current) {
-        marker.current.remove();
-      }
+    map.current = new mapTilerSDK.Map({
+      container: mapContainer.current,
+      style: MapStyle.STREETS,
+      center: coordinates,
+      zoom: DEFAULT_ZOOM,
+      pitch: 60,
+      maxBounds: JABODETABEK_BOUNDS,
+      forceNoAttributionControl: true,
+      navigationControl: false,
+      geolocateControl: false,
+      antialias: true,
+      transformRequest,
+    });
 
-      marker.current = new mapTilerSDK.Marker()
-        .setLngLat(coordinates)
-        .addTo(map.current);
-    } catch (error) {
-      logError('Marker update', error);
-    }
+    // Initialize geolocate control
+    geolocateControl.current = new mapTilerSDK.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      fitBoundsOptions: {
+        maxZoom: DEFAULT_ZOOM,
+      },
+      trackUserLocation: true,
+      showAccuracyCircle: true,
+      showUserLocation: true,
+    });
+
+    // Add controls to map
+    map.current.addControl(new mapTilerSDK.NavigationControl(), 'bottom-right');
+    map.current.addControl(geolocateControl.current, 'bottom-right');
+
+    map.current.on('error', (error: Error) => {
+      logError('Map runtime', error);
+      setMapError(ERROR_MESSAGES.LOAD_ERROR);
+    });
+
+    map.current.on('load', () => {
+      setMapError(null);
+      // Trigger geolocation on load
+      geolocateControl.current?.trigger();
+    });
   }, []);
 
+  // Initialize map
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
     try {
-      const validCoordinates = validateAndTransformCoordinates(center);
-      const validHeading = normalizeHeading(heading);
+      // MapTiler expects [lng, lat] order for coordinates
+      const [lat, lng] = center;
 
-      map.current = new mapTilerSDK.Map({
-        container: mapContainer.current,
-        style: MapStyle.STREETS,
-        center: validCoordinates,
-        zoom: DEFAULT_ZOOM,
-        pitch: 60,
-        bearing: validHeading,
-        navigationControl: 'bottom-right',
-        geolocateControl: 'bottom-right',
-        maxBounds: JABODETABEK_BOUNDS,
-        forceNoAttributionControl: true,
-        transformRequest,
-      });
+      // Validate coordinates
+      if (!isValidLatitude(lat) || !isValidLongitude(lng)) {
+        logError(
+          'Coordinate validation',
+          new Error(ERROR_MESSAGES.INVALID_COORDINATES),
+        );
+        // Use default coordinates as fallback
+        const [defaultLat, defaultLng] = DEFAULT_COORDINATES;
+        const fallbackCoordinates: [number, number] = [defaultLng, defaultLat];
+        initializeMap(fallbackCoordinates);
+        return;
+      }
 
-      map.current.on('error', (error: Error) => {
-        logError('Map runtime', error);
-        setMapError(ERROR_MESSAGES.LOAD_ERROR);
-      });
-
-      map.current.on('load', () => {
-        setMapError(null);
-        updateMarker(validCoordinates);
-      });
+      const validCoordinates: [number, number] = [lng, lat];
+      initializeMap(validCoordinates);
     } catch (error) {
       logError('Map initialization', error);
       setMapError(ERROR_MESSAGES.INITIALIZATION);
@@ -137,10 +129,6 @@ export default function PreviewMap({
 
     return () => {
       try {
-        if (marker.current) {
-          marker.current.remove();
-          marker.current = null;
-        }
         if (map.current) {
           map.current.remove();
           map.current = null;
@@ -149,7 +137,7 @@ export default function PreviewMap({
         logError('Cleanup', error);
       }
     };
-  }, [center, heading, updateMarker]);
+  }, [center, initializeMap]);
 
   if (mapError) {
     return (

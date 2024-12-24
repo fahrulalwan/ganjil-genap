@@ -35,6 +35,8 @@ import {
   Info,
   RefreshCw,
   Signal,
+  AlertOctagon,
+  CircleCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -51,6 +53,7 @@ const LOCATION_THRESHOLD = 0.00025; // Approximately 25 meters
 const TIME_THRESHOLD = 60; // minutes
 const FALLBACK_TIMEOUT = 30000; // 30 seconds timeout for fallback mechanism
 const PERIODIC_REFRESH = 300000; // Refresh location every 5 minutes
+const UPDATE_DEBOUNCE = 100; // 100ms debounce for location updates
 
 const TIME_PERIODS = {
   MORNING: {
@@ -109,6 +112,25 @@ const MapContent: FC = () => {
   const [simulationEnabled, setSimulationEnabled] = useState(false);
   const [simulatedTime, setSimulatedTime] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(
+    null,
+  );
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [streetAddress, setStreetAddress] = useState<string>('Inisialisasi...');
+  const [isLoadingAddress, setIsLoadingAddress] = useState(false);
+  const lastLocation = useRef<[number, number] | null>(null);
+  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Add a small delay to ensure smooth transition
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Update current time every minute
   useEffect(() => {
@@ -245,27 +267,6 @@ const MapContent: FC = () => {
     </div>
   );
 
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(
-    null,
-  );
-  const [userHeading, setUserHeading] = useState<number | null>(null);
-  const [locationError, setLocationError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
-  const [streetAddress, setStreetAddress] = useState<string>('Inisialisasi...');
-  const [isLoadingAddress, setIsLoadingAddress] = useState(false);
-  const lastLocation = useRef<[number, number] | null>(null);
-  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Add a small delay to ensure smooth transition
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   // Memoize plate type validation
   const isValidPlateType = useMemo(
     () => plateType && ['odd', 'even'].includes(plateType),
@@ -371,26 +372,28 @@ const MapContent: FC = () => {
     // Invalid plate type check
     if (!isValidPlateType) {
       return {
-        icon: <AlertTriangle className="w-4 h-4" />,
+        icon: <AlertOctagon className="w-4 h-4" />,
         message: 'Tipe plat tidak valid',
         type: 'error' as const,
       };
     }
 
     // Weekend check
-    const isWeekend = currentTime.getDay() === 0 || currentTime.getDay() === 6;
+    const isWeekend = [0, 6].includes(currentTime.getDay());
     if (isWeekend) {
       return {
-        icon: <AlertCircle className="w-4 h-4" />,
+        icon: <CircleCheck className="w-4 h-4" />,
         message: 'Bebas melintas',
         subMessage: 'Akhir pekan',
         type: 'success' as const,
       };
     }
 
-    const isPlateAllowed =
-      (currentTime.getDate() % 2 === 0 && plateType === 'even') ||
-      (currentTime.getDate() % 2 !== 0 && plateType === 'odd');
+    const isDayEven = currentTime.getDate() % 2 === 0;
+
+    const isPlateAllowed = isDayEven
+      ? plateType === 'even'
+      : plateType === 'odd';
 
     // Active policy period
     if (policyActive) {
@@ -400,7 +403,11 @@ const MapContent: FC = () => {
         timeUntilChange.minutes <= TIME_THRESHOLD
       ) {
         return {
-          icon: <AlertTriangle className="w-4 h-4" />,
+          icon: isPlateAllowed ? (
+            <CircleCheck className="w-4 h-4" />
+          ) : (
+            <AlertTriangle className="w-4 h-4" />
+          ),
           message: isPlateAllowed ? 'Bebas melintas' : 'Dilarang melintas',
           subMessage: `${timeUntilChange.minutes}m menuju periode bebas`,
           type: isPlateAllowed ? ('success' as const) : ('error' as const),
@@ -410,7 +417,7 @@ const MapContent: FC = () => {
       // During active policy
       return {
         icon: isPlateAllowed ? (
-          <AlertCircle className="w-4 h-4" />
+          <CircleCheck className="w-4 h-4" />
         ) : (
           <AlertTriangle className="w-4 h-4" />
         ),
@@ -427,7 +434,11 @@ const MapContent: FC = () => {
       timeUntilChange.minutes <= TIME_THRESHOLD
     ) {
       return {
-        icon: <AlertTriangle className="w-4 h-4" />,
+        icon: isPlateAllowed ? (
+          <CircleCheck className="w-4 h-4" />
+        ) : (
+          <AlertTriangle className="w-4 h-4" />
+        ),
         message: 'Bebas melintas',
         subMessage: isPlateAllowed
           ? null
@@ -438,7 +449,7 @@ const MapContent: FC = () => {
 
     // Outside policy hours
     return {
-      icon: <AlertCircle className="w-4 h-4" />,
+      icon: <CircleCheck className="w-4 h-4" />,
       message: 'Bebas melintas',
       type: 'success' as const,
     };
@@ -525,6 +536,7 @@ const MapContent: FC = () => {
     let fallbackTimeoutId: NodeJS.Timeout | undefined;
     let retryTimeoutId: NodeJS.Timeout | undefined;
     let periodicRefreshId: NodeJS.Timeout | undefined;
+    let debounceTimeoutId: NodeJS.Timeout | undefined;
 
     const handleSuccess = (position: GeolocationPosition) => {
       if (!mounted) return;
@@ -534,16 +546,23 @@ const MapContent: FC = () => {
         position.coords.longitude,
       ];
 
-      if (hasLocationChangedSignificantly(newLocation)) {
-        setUserLocation(newLocation);
-        lastLocation.current = newLocation;
-        updateStreetAddress(newLocation[0], newLocation[1]);
+      // Clear any existing debounce timeout
+      if (debounceTimeoutId) {
+        clearTimeout(debounceTimeoutId);
       }
 
-      setUserHeading(position.coords.heading);
-      setGpsAccuracy(position.coords.accuracy);
-      setLocationError(null);
-      setRetryCount(0);
+      // Debounce location updates
+      debounceTimeoutId = setTimeout(() => {
+        if (hasLocationChangedSignificantly(newLocation)) {
+          setUserLocation(newLocation);
+          lastLocation.current = newLocation;
+          updateStreetAddress(newLocation[0], newLocation[1]);
+        }
+
+        setGpsAccuracy(position.coords.accuracy);
+        setLocationError(null);
+        setRetryCount(0);
+      }, UPDATE_DEBOUNCE);
     };
 
     const handleError = (error: GeolocationPositionError) => {
@@ -561,7 +580,7 @@ const MapContent: FC = () => {
 
       // Implement progressive retry with backoff
       if (retryCount < MAX_RETRIES) {
-        const delay = RETRY_DELAY * 1.5 ** retryCount; // Using ** operator instead of Math.pow
+        const delay = RETRY_DELAY * 1.5 ** retryCount;
         setRetryCount((prev) => prev + 1);
         retryTimeoutId = setTimeout(startLocationWatch, delay);
       } else {
@@ -648,6 +667,7 @@ const MapContent: FC = () => {
       if (fallbackTimeoutId) clearTimeout(fallbackTimeoutId);
       if (retryTimeoutId) clearTimeout(retryTimeoutId);
       if (periodicRefreshId) clearInterval(periodicRefreshId);
+      if (debounceTimeoutId) clearTimeout(debounceTimeoutId);
     };
   }, [
     hasLocationChangedSignificantly,
@@ -673,7 +693,7 @@ const MapContent: FC = () => {
         <section className="absolute inset-0" aria-label="Map View">
           {userLocation ? (
             <figure className="h-full">
-              <PreviewMap center={userLocation} heading={userHeading ?? 0} />
+              <PreviewMap center={userLocation} />
               <figcaption className="sr-only">
                 Interactive map showing current location
               </figcaption>
