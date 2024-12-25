@@ -3,6 +3,7 @@ import * as mapTilerSDK from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import { type LngLatBoundsLike, MapStyle } from '@maptiler/sdk';
 import { transformRequest } from '@/utils/mapUtils';
+import majorRoads from '@/constants/geojson/major-roads.json';
 
 // temporarily set api key to dummy key to remove the error
 mapTilerSDK.config.apiKey = 'abcdefghijklmnopqrstuvwxyz';
@@ -11,6 +12,29 @@ interface MapProps {
   center: [number, number];
   heading: number;
 }
+
+// Type the GeoJSON data
+const typedMajorRoads = majorRoads as {
+  type: 'FeatureCollection';
+  features: Array<{
+    type: 'Feature';
+    properties: {
+      name: string;
+      region: string;
+      description: string;
+      length: number;
+      startPoint: string;
+      endPoint: string;
+      intersections: string[];
+      restrictions: string[];
+      landmarks: Array<{ name: string; coordinates: [number, number] }>;
+    };
+    geometry: {
+      type: 'LineString';
+      coordinates: Array<[number, number]>;
+    };
+  }>;
+};
 
 // Constants
 const DEFAULT_COORDINATES: [number, number] = [-6.2088, 106.8456]; // Jakarta coordinates
@@ -127,8 +151,86 @@ export default function PreviewMap({
       });
 
       map.current.on('load', () => {
+        if (!map.current) return;
         setMapError(null);
         updateMarker(validCoordinates);
+
+        // Add GeoJSON source
+        map.current.addSource('major-roads', {
+          type: 'geojson',
+          data: typedMajorRoads,
+        });
+
+        // Add the road lines layer
+        map.current.addLayer({
+          id: 'major-roads-line',
+          type: 'line',
+          source: 'major-roads',
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round',
+          },
+          paint: {
+            'line-color': '#FF4444',
+            'line-width': 4,
+            'line-opacity': 0.8,
+          },
+        });
+
+        // Add the road names layer
+        map.current.addLayer({
+          id: 'major-roads-label',
+          type: 'symbol',
+          source: 'major-roads',
+          layout: {
+            'text-field': ['get', 'name'],
+            'text-font': ['Open Sans Regular'],
+            'text-size': 12,
+            'text-offset': [0, 1],
+            'text-anchor': 'top',
+            'symbol-placement': 'line',
+          },
+          paint: {
+            'text-color': '#333333',
+            'text-halo-color': '#FFFFFF',
+            'text-halo-width': 2,
+          },
+        });
+
+        // Add hover effect
+        map.current.on('mouseenter', 'major-roads-line', () => {
+          if (map.current) {
+            map.current.getCanvas().style.cursor = 'pointer';
+          }
+        });
+
+        map.current.on('mouseleave', 'major-roads-line', () => {
+          if (map.current) {
+            map.current.getCanvas().style.cursor = '';
+          }
+        });
+
+        // Add click event to show road info
+        map.current.on('click', 'major-roads-line', (e) => {
+          if (!e.features?.[0]?.properties || !map.current) return;
+          
+          const properties = e.features[0].properties;
+          const coordinates = e.lngLat;
+
+          new mapTilerSDK.Popup()
+            .setLngLat(coordinates)
+            .setHTML(`
+              <div style="padding: 8px;">
+                <h3 style="font-weight: bold; margin-bottom: 4px;">${properties.name}</h3>
+                <p style="margin: 4px 0;">${properties.description}</p>
+                <p style="margin: 4px 0; color: #666;">
+                  <strong>Restrictions:</strong><br/>
+                  ${properties.restrictions.join('<br/>')}
+                </p>
+              </div>
+            `)
+            .addTo(map.current);
+        });
       });
     } catch (error) {
       logError('Map initialization', error);
