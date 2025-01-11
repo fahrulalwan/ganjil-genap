@@ -1,10 +1,12 @@
 export const transformRequest = (url: string) => {
-  if (!url.startsWith('https://api.maptiler.com')) {
-    return { url };
-  }
-
   try {
     const originalUrl = new URL(url);
+    const allowedHosts = ['api.maptiler.com'];
+    
+    if (!allowedHosts.includes(originalUrl.host)) {
+      return { url };
+    }
+
     const proxyUrl = new URL('/api/maptiles', window.location.origin);
     proxyUrl.searchParams.set('path', originalUrl.pathname);
     
