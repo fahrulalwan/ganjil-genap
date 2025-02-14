@@ -3,6 +3,7 @@ import * as mapTilerSDK from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import { type LngLatBoundsLike, MapStyle } from '@maptiler/sdk';
 import { transformRequest } from '@/utils/mapUtils';
+import { ROAD_COORDINATES, ROAD_STYLE } from '@/constants/roadCoordinates';
 
 // temporarily set api key to dummy key to remove the error
 mapTilerSDK.config.apiKey = 'abcdefghijklmnopqrstuvwxyz';
@@ -94,6 +95,38 @@ export default function PreviewMap({ center }: Readonly<MapProps>) {
 
     map.current.on('load', () => {
       setMapError(null);
+      // Add road polylines
+      Object.entries(ROAD_COORDINATES).forEach(([_, coordinates]  , index) => {
+        // Add the line source
+        map.current?.addSource(`road-${index}`, {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'LineString',
+              coordinates
+            }
+          }
+        });
+
+        // Add the line layer
+        map.current?.addLayer({
+          id: `road-line-${index}`,
+          type: 'line',
+          source: `road-${index}`,
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': ROAD_STYLE.activeColor,
+            'line-width': ROAD_STYLE.lineWidth,
+            'line-opacity': ROAD_STYLE.opacity
+          }
+        });
+      });
+
       // Trigger geolocation on load
       geolocateControl.current?.trigger();
     });
