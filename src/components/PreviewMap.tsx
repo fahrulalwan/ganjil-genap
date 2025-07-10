@@ -1,11 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
 import * as mapTilerSDK from '@maptiler/sdk';
+import { type FC, useCallback, useEffect, useRef, useState } from 'react';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import { type LngLatBoundsLike, MapStyle } from '@maptiler/sdk';
-import { transformRequest } from '@/utils/mapUtils';
 import { ROAD_STYLE } from '@/constants/roadCoordinates';
+import { transformRequest } from '@/utils/mapUtils';
 
 // temporarily set api key to dummy key to remove the error
 mapTilerSDK.config.apiKey = 'abcdefghijklmnopqrstuvwxyz';
@@ -50,7 +50,7 @@ function isValidLongitude(lng: number): boolean {
   return !Number.isNaN(lng) && lng >= -180 && lng <= 180;
 }
 
-export default function PreviewMap({ center }: Readonly<MapProps>) {
+const PreviewMap: FC<MapProps> = ({ center }: Readonly<MapProps>) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapTilerSDK.Map | null>(null);
   const geolocateControl = useRef<mapTilerSDK.GeolocateControl | null>(null);
@@ -59,82 +59,88 @@ export default function PreviewMap({ center }: Readonly<MapProps>) {
   const [isLoading, setIsLoading] = useState(true);
 
   // Helper function to initialize map
-  const initializeMap = useCallback((coordinates: [number, number]) => {
-    if (!mapContainer.current) return;
+  const initializeMap = useCallback(
+    (coordinates: [number, number]) => {
+      if (!mapContainer.current) return;
 
-    map.current = new mapTilerSDK.Map({
-      container: mapContainer.current,
-      style: MapStyle.STREETS,
-      center: coordinates,
-      zoom: DEFAULT_ZOOM,
-      pitch: 60,
-      maxBounds: JABODETABEK_BOUNDS,
-      forceNoAttributionControl: true,
-      navigationControl: false,
-      geolocateControl: false,
-      antialias: true,
-      transformRequest,
-    });
-
-    // Initialize geolocate control
-    geolocateControl.current = new mapTilerSDK.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
-      fitBoundsOptions: {
-        maxZoom: DEFAULT_ZOOM,
-      },
-      trackUserLocation: true,
-      showAccuracyCircle: true,
-      showUserLocation: true,
-    });
-
-    // Add controls to map
-    map.current.addControl(new mapTilerSDK.NavigationControl(), 'bottom-right');
-    map.current.addControl(geolocateControl.current, 'bottom-right');
-
-    map.current.on('error', (error: Error) => {
-      logError('Map runtime', error);
-      setMapError(ERROR_MESSAGES.LOAD_ERROR);
-    });
-
-    map.current.on('load', () => {
-      if (!map.current) return;
-      setMapError(null);
-
-      roads.forEach((road, index) => {
-        if (!map.current) return;
-        const sourceId = `road-source-${index}`;
-        const layerId = `road-layer-${index}`;
-
-        map.current.addSource(sourceId, {
-          type: 'geojson',
-          data: {
-            type: 'Feature',
-            properties: { name: road.name },
-            geometry: {
-              type: 'LineString',
-              coordinates: road.coordinates,
-            },
-          },
-        });
-
-        map.current.addLayer({
-          id: layerId,
-          type: 'line',
-          source: sourceId,
-          layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: {
-            'line-color': ROAD_STYLE.activeColor,
-            'line-width': ROAD_STYLE.lineWidth,
-            'line-opacity': ROAD_STYLE.opacity,
-          },
-        });
+      map.current = new mapTilerSDK.Map({
+        container: mapContainer.current,
+        style: MapStyle.STREETS,
+        center: coordinates,
+        zoom: DEFAULT_ZOOM,
+        pitch: 60,
+        maxBounds: JABODETABEK_BOUNDS,
+        forceNoAttributionControl: true,
+        navigationControl: false,
+        geolocateControl: false,
+        antialias: true,
+        transformRequest,
       });
 
-      geolocateControl.current?.trigger();
-    });
-  }, [roads]);
+      // Initialize geolocate control
+      geolocateControl.current = new mapTilerSDK.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        fitBoundsOptions: {
+          maxZoom: DEFAULT_ZOOM,
+        },
+        trackUserLocation: true,
+        showAccuracyCircle: true,
+        showUserLocation: true,
+      });
+
+      // Add controls to map
+      map.current.addControl(
+        new mapTilerSDK.NavigationControl(),
+        'bottom-right',
+      );
+      map.current.addControl(geolocateControl.current, 'bottom-right');
+
+      map.current.on('error', (error: Error) => {
+        logError('Map runtime', error);
+        setMapError(ERROR_MESSAGES.LOAD_ERROR);
+      });
+
+      map.current.on('load', () => {
+        if (!map.current) return;
+        setMapError(null);
+
+        roads.forEach((road, index) => {
+          if (!map.current) return;
+          const sourceId = `road-source-${index}`;
+          const layerId = `road-layer-${index}`;
+
+          map.current.addSource(sourceId, {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              properties: { name: road.name },
+              geometry: {
+                type: 'LineString',
+                coordinates: road.coordinates,
+              },
+            },
+          });
+
+          map.current.addLayer({
+            id: layerId,
+            type: 'line',
+            source: sourceId,
+            layout: { 'line-join': 'round', 'line-cap': 'round' },
+            paint: {
+              'line-color': ROAD_STYLE.activeColor,
+              'line-width': ROAD_STYLE.lineWidth,
+              'line-opacity': ROAD_STYLE.opacity,
+            },
+          });
+        });
+
+        geolocateControl.current?.trigger();
+      });
+    },
+    [roads],
+  );
 
   useEffect(() => {
     async function fetchRoads() {
@@ -213,4 +219,6 @@ export default function PreviewMap({ center }: Readonly<MapProps>) {
   }
 
   return <div ref={mapContainer} style={{ height: '100%', width: '100%' }} />;
-}
+};
+
+export default PreviewMap;
