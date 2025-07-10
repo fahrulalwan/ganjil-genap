@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Github, Mail, Linkedin } from 'lucide-react';
+import { MapPin, GithubIcon, Mail, LinkedinIcon, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AboutPage() {
@@ -66,7 +66,7 @@ export default function AboutPage() {
                     <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    Fungsi
+                    Fitur Utama
                   </h2>
                 </div>
                 <div className="space-y-6">
@@ -171,24 +171,21 @@ export default function AboutPage() {
                         Penggunaan Data
                       </h3>
                       <ul className="space-y-2 text-sm text-blue-700/90 dark:text-blue-400/90">
-                        <li className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-50 dark:bg-blue-950" />
-                          <span className="text-gray-600 dark:text-gray-400">
-                            Data lokasi hanya diproses di perangkat
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-50 dark:bg-blue-950" />
-                          <span className="text-gray-600 dark:text-gray-400">
-                            Tidak ada penyimpanan data pribadi
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-50 dark:bg-blue-950" />
-                          <span className="text-gray-600 dark:text-gray-400">
-                            Tidak memerlukan registrasi
-                          </span>
-                        </li>
+                        {[
+                          'Data lokasi hanya diproses di perangkat',
+                          'Tidak ada penyimpanan data pribadi',
+                          'Tidak memerlukan registrasi',
+                        ].map((item) => (
+                          <li key={item} className="flex items-start gap-2">
+                            <CheckCircle
+                              className="h-4 w-4 mt-0.5 text-blue-500 flex-shrink-0"
+                              aria-hidden="true"
+                            />
+                            <span className="text-gray-600 dark:text-gray-400">
+                              {item}
+                            </span>
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   </div>
@@ -260,7 +257,7 @@ export default function AboutPage() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-3 py-1.5 bg-background/80 hover:bg-background rounded-full text-sm font-medium transition-colors border border-border/50"
                       >
-                        <Github className="h-4 w-4 mr-1.5" />
+                        <GithubIcon className="h-4 w-4 mr-1.5" />
                         GitHub
                       </Link>
                       <Link
@@ -269,7 +266,7 @@ export default function AboutPage() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center px-3 py-1.5 bg-background/80 hover:bg-background rounded-full text-sm font-medium transition-colors border border-border/50"
                       >
-                        <Linkedin className="h-4 w-4 mr-1.5" />
+                        <LinkedinIcon className="h-4 w-4 mr-1.5" />
                         LinkedIn
                       </Link>
                       <Link
@@ -303,7 +300,7 @@ export default function AboutPage() {
                           rel="noopener noreferrer"
                           className="inline-flex items-center px-3 py-1.5 bg-card hover:bg-card/80 border border-border/50 rounded-full text-sm font-medium justify-center transition-colors"
                         >
-                          <Github className="h-4 w-4 mr-1.5" />
+                          <GithubIcon className="h-4 w-4 mr-1.5" />
                           Lapor Bug
                         </Link>
                       </div>
@@ -314,19 +311,17 @@ export default function AboutPage() {
             </Card>
           </div>
 
-          <div className="text-center space-y-4 max-w-sm mx-auto">
-            <div className="p-6 bg-card text-card-foreground rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow transition-all">
-              <Button
-                asChild
-                size="lg"
-                className="bg-black hover:bg-black/90 dark:bg-white dark:hover:bg-white/90 dark:text-black shadow-md px-6 sm:px-8 text-base sm:text-lg w-full h-[42px] sm:h-[48px]"
-              >
-                <Link href="/select">Mulai Menggunakan</Link>
-              </Button>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-3">
-                Gratis dan tanpa perlu registrasi
-              </p>
-            </div>
+          <div className="text-center space-y-4">
+            <Button
+              asChild
+              size="lg"
+              className="bg-black hover:bg-black/90 dark:bg-white dark:hover:bg-white/90 dark:text-black shadow-md px-6 sm:px-8 text-base sm:text-lg w-full sm:w-auto h-[42px] sm:h-[48px]"
+            >
+              <Link href="/select">Cek Status Sekarang</Link>
+            </Button>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Gratis dan tanpa perlu registrasi
+            </p>
           </div>
         </div>
       </div>
