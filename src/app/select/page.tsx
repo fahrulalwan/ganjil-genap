@@ -1,4 +1,3 @@
-import AdSensePlaceholder from '@/components/AdSensePlaceholder';
 import SelectAreaCoverageCard from '@/components/app/select/select-area-coverage-card';
 import SelectTimeRestrictionCard from '@/components/app/select/select-time-restriction-card';
 import SelectVehicleLicenseForm from '@/components/app/select/select-vehicle-license-form';
@@ -40,10 +39,6 @@ export default function VehicleSelectionPage() {
           </div>
         </section>
       </div>
-
-      <aside className="mt-12" aria-label="Iklan">
-        <AdSensePlaceholder />
-      </aside>
     </div>
   );
 }

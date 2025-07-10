@@ -1,8 +1,7 @@
-import AdSensePlaceholder from '@/components/AdSensePlaceholder';
+import { Clock, ExternalLink, Github, MapPin } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Clock, Github, ExternalLink } from 'lucide-react';
-import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -380,10 +379,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      <aside aria-label="Advertisement">
-        <AdSensePlaceholder className="mt-8" />
-      </aside>
     </article>
   );
 }

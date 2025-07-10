@@ -31,16 +31,16 @@ interface PolicyStatus {
 
 const MapFloatingInfoCard: FC<{
   currentTime: Date;
-  lastCoordinate: [number, number] | null;
+
   isLoadingAddress: boolean;
   streetAddress: string;
   userLocation: [number, number] | null;
   gpsAccuracy: number | null;
   locationError: string | null;
-  onFetchStreetAddress: (lat: number, lng: number) => Promise<void>;
+  onFetchStreetAddress: (lat: number, lng: number) => void;
 }> = ({
   currentTime,
-  lastCoordinate,
+
   isLoadingAddress,
   streetAddress,
   userLocation,
@@ -237,10 +237,10 @@ const MapFloatingInfoCard: FC<{
   }, [isValidPlateType, currentTime, policyActive, timeUntilChange, plateType]);
 
   const handleRefresh = useCallback(() => {
-    if (lastCoordinate) {
-      onFetchStreetAddress(lastCoordinate[0], lastCoordinate[1]);
+    if (userLocation) {
+      onFetchStreetAddress(userLocation[0], userLocation[1]);
     }
-  }, [onFetchStreetAddress, lastCoordinate]);
+  }, [onFetchStreetAddress, userLocation]);
 
   // Use destructured values from timeUntilChange
   const { hours, minutes, nextPeriod } = timeUntilChange;
