@@ -1,9 +1,11 @@
+'use client';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as mapTilerSDK from '@maptiler/sdk';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
 import { type LngLatBoundsLike, MapStyle } from '@maptiler/sdk';
 import { transformRequest } from '@/utils/mapUtils';
-import { ROAD_COORDINATES, ROAD_STYLE } from '@/constants/roadCoordinates';
+import { ROAD_STYLE } from '@/constants/roadCoordinates';
 
 // temporarily set api key to dummy key to remove the error
 mapTilerSDK.config.apiKey = 'abcdefghijklmnopqrstuvwxyz';
@@ -16,14 +18,10 @@ interface MapProps {
 const DEFAULT_COORDINATES: [number, number] = [-6.2088, 106.8456]; // Jakarta coordinates
 const DEFAULT_ZOOM = 18;
 
-/**
- * TODO: Fine-tune these bounds to better cover Jakarta's Ganjil-Genap areas
- * @see GitHub Issue: https://github.com/fahrulalwan/ganjil-genap/issues/2
- */
-// Jakarta bounds including main surrounding areas
+// Expansive bounds for the entire Jakarta area to ensure all routes are visible.
 const JABODETABEK_BOUNDS: LngLatBoundsLike = [
-  [106.6885, -6.3728], // Southwest (includes parts of Tangerang and South Jakarta)
-  [106.9873, -6.0805], // Northeast (includes parts of North Jakarta and Bekasi)
+  [106.4, -6.5], // Southwest
+  [107.2, -6.0], // Northeast
 ] as const;
 
 // Error messages
@@ -32,6 +30,11 @@ const ERROR_MESSAGES = {
   LOAD_ERROR: 'Failed to load map. Please try refreshing the page.',
   INVALID_COORDINATES: 'Invalid coordinates provided',
 } as const;
+
+interface Road {
+  name: string;
+  coordinates: [number, number][];
+}
 
 function logError(context: string, error: unknown) {
   // Safe error logging that doesn't expose internal details
@@ -52,6 +55,8 @@ export default function PreviewMap({ center }: Readonly<MapProps>) {
   const map = useRef<mapTilerSDK.Map | null>(null);
   const geolocateControl = useRef<mapTilerSDK.GeolocateControl | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [roads, setRoads] = useState<Road[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Helper function to initialize map
   const initializeMap = useCallback((coordinates: [number, number]) => {
@@ -94,42 +99,61 @@ export default function PreviewMap({ center }: Readonly<MapProps>) {
     });
 
     map.current.on('load', () => {
+      if (!map.current) return;
       setMapError(null);
-      // Add road polylines
-      Object.entries(ROAD_COORDINATES).forEach(([_, coordinates]  , index) => {
-        // Add the line source
-        map.current?.addSource(`road-${index}`, {
+
+      roads.forEach((road, index) => {
+        if (!map.current) return;
+        const sourceId = `road-source-${index}`;
+        const layerId = `road-layer-${index}`;
+
+        map.current.addSource(sourceId, {
           type: 'geojson',
           data: {
             type: 'Feature',
-            properties: {},
+            properties: { name: road.name },
             geometry: {
               type: 'LineString',
-              coordinates
-            }
-          }
+              coordinates: road.coordinates,
+            },
+          },
         });
 
-        // Add the line layer
-        map.current?.addLayer({
-          id: `road-line-${index}`,
+        map.current.addLayer({
+          id: layerId,
           type: 'line',
-          source: `road-${index}`,
-          layout: {
-            'line-join': 'round',
-            'line-cap': 'round'
-          },
+          source: sourceId,
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
           paint: {
             'line-color': ROAD_STYLE.activeColor,
             'line-width': ROAD_STYLE.lineWidth,
-            'line-opacity': ROAD_STYLE.opacity
-          }
+            'line-opacity': ROAD_STYLE.opacity,
+          },
         });
       });
 
-      // Trigger geolocation on load
       geolocateControl.current?.trigger();
     });
+  }, [roads]);
+
+  useEffect(() => {
+    async function fetchRoads() {
+      try {
+        const response = await fetch('/api/roads');
+        if (!response.ok) {
+          throw new Error('Failed to fetch road data');
+        }
+        const data: Road[] = await response.json();
+        setRoads(data);
+      } catch (error) {
+        logError('Fetch road data', error);
+        setMapError('Could not load road data. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchRoads();
   }, []);
 
   // Initialize map
@@ -171,6 +195,14 @@ export default function PreviewMap({ center }: Readonly<MapProps>) {
       }
     };
   }, [center, initializeMap]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full bg-gray-100/50 dark:bg-gray-900/50">
+        <p>Loading map data...</p>
+      </div>
+    );
+  }
 
   if (mapError) {
     return (

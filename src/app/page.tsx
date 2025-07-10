@@ -72,16 +72,23 @@ export default function Home() {
             >
               <Link href="/select">Cek Status Lokasi</Link>
             </Button>
-            <Link
-              href="https://github.com/fahrulalwan/ganjil-genap"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-gray-500 dark:text-gray-400 inline-flex items-center gap-1 hover:text-gray-900 dark:hover:text-gray-100"
-              aria-label="Lihat kode sumber di GitHub (membuka di tab baru)"
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="shadow-md px-6 sm:px-8 text-base sm:text-lg w-full sm:w-auto h-[42px] sm:h-[48px]"
             >
-              <Github className="h-4 w-4" aria-hidden="true" />
-              Source code
-            </Link>
+              <Link
+                href="https://github.com/fahrulalwan/ganjil-genap"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Lihat kode sumber di GitHub (membuka di tab baru)"
+              >
+                <Github className="h-4 w-4 mr-2" aria-hidden="true" />
+                Source Code
+                <ExternalLink className="h-4 w-4 ml-2" aria-hidden="true" />
+              </Link>
+            </Button>
           </div>
         </section>
 
@@ -275,7 +282,7 @@ export default function Home() {
             size="lg"
             className="bg-black hover:bg-black/90 dark:bg-white dark:hover:bg-white/90 dark:text-black shadow-md px-6 sm:px-8 text-base sm:text-lg w-full sm:w-auto h-[42px] sm:h-[48px]"
           >
-            <Link href="/select">Cek Status Lokasi</Link>
+            <Link href="/select">Mulai Cek Lokasi</Link>
           </Button>
         </section>
       </div>
