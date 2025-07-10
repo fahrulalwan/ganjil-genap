@@ -9,18 +9,14 @@ import {
 } from 'lucide-react';
 import { type FC, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+  FALLBACK_TIMEOUT,
+  GEOLOCATION_OPTIONS,
+  MAX_RETRIES,
+  PERIODIC_REFRESH,
+  RETRY_DELAY,
+} from '@/constants/geolocation';
 import { cn } from '@/lib/utils';
-
-// Location tracking constants
-const GEOLOCATION_OPTIONS = {
-  enableHighAccuracy: true,
-  timeout: 5000,
-  maximumAge: 10000,
-};
-const MAX_RETRIES = 5;
-const RETRY_DELAY = 1000;
-const FALLBACK_TIMEOUT = 30000;
-const PERIODIC_REFRESH = 300000;
 
 interface ComponentProps {
   onPermissionChange: (permission: boolean) => void;
@@ -266,7 +262,10 @@ const SelectVehicleLicenseLocationInput: FC<ComponentProps> = ({
                     aria-label={`Akurasi GPS: ${Math.round(gpsAccuracy)} meter`}
                   >
                     <Signal
-                      className={cn('w-3.5 h-3.5', getGpsSignalClass(gpsAccuracy))}
+                      className={cn(
+                        'w-3.5 h-3.5',
+                        getGpsSignalClass(gpsAccuracy),
+                      )}
                       aria-hidden="true"
                     />
                     <span className="text-xs font-medium text-foreground/80">
@@ -332,10 +331,7 @@ const SelectVehicleLicenseLocationInput: FC<ComponentProps> = ({
         >
           {isLoading ? (
             <>
-              <Loader2
-                className="w-4 h-4 animate-spin"
-                aria-hidden="true"
-              />
+              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
               <span>Meminta Akses...</span>
             </>
           ) : (

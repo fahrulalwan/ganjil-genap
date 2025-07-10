@@ -16,6 +16,8 @@ import { type FC, useCallback, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { DEFAULT_COORDINATES } from '@/constants/map';
+import { TIME_PERIODS, TIME_THRESHOLD } from '@/constants/time';
 import { cn } from '@/lib/utils';
 import MapFloatingInfoSheet from './map-floating-info-sheet';
 
@@ -26,27 +28,6 @@ interface PolicyStatus {
   minutes: number;
   nextPeriod: 'mulai' | 'selesai';
 }
-
-// Constants
-const DEFAULT_LOCATION: [number, number] = [-6.2088, 106.8456]; // Jakarta coordinates
-const TIME_THRESHOLD = 60; // minutes
-
-const TIME_PERIODS = {
-  MORNING: {
-    label: 'Pagi',
-    time: '06:00 - 10:00',
-    start: 6 * 60,
-    end: 10 * 60,
-    color: 'bg-amber-500',
-  },
-  EVENING: {
-    label: 'Sore',
-    time: '16:00 - 21:00',
-    start: 16 * 60,
-    end: 21 * 60,
-    color: 'bg-blue-500',
-  },
-} as const;
 
 const MapFloatingInfoCard: FC<{
   currentTime: Date;
@@ -71,10 +52,7 @@ const MapFloatingInfoCard: FC<{
   const plateType = searchParams.get('plate') as PlateType;
 
   // Memoize plate type validation
-  const isValidPlateType = useMemo(
-    () => plateType && ['odd', 'even'].includes(plateType),
-    [plateType],
-  );
+  const isValidPlateType = plateType && ['odd', 'even'].includes(plateType);
 
   // Memoize current time in minutes for calculations
   const currentTimeInMinutes = useMemo(() => {
@@ -136,10 +114,8 @@ const MapFloatingInfoCard: FC<{
   }, [currentTimeInMinutes]);
 
   // Memoize current period
-  const currentPeriod = useMemo(() => {
-    const hour = currentTime.getHours();
-    return hour < 10 ? TIME_PERIODS.MORNING : TIME_PERIODS.EVENING;
-  }, [currentTime]);
+  const currentPeriod =
+    currentTime.getHours() < 10 ? TIME_PERIODS.MORNING : TIME_PERIODS.EVENING;
 
   // Memoize time until next change calculation
   const timeUntilChange = useMemo<PolicyStatus>(() => {
@@ -360,7 +336,7 @@ const MapFloatingInfoCard: FC<{
                       isLoadingAddress
                         ? 'text-muted-foreground animate-pulse'
                         : 'text-blue-600 dark:text-blue-400',
-                      userLocation === DEFAULT_LOCATION && 'text-amber-500',
+                      userLocation === DEFAULT_COORDINATES && 'text-amber-500',
                     )}
                   />
                   <div className="flex-1 min-w-0">

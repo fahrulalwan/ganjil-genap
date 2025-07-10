@@ -3,7 +3,13 @@
 import * as mapTilerSDK from '@maptiler/sdk';
 import { type FC, useCallback, useEffect, useRef, useState } from 'react';
 import '@maptiler/sdk/dist/maptiler-sdk.css';
-import { type LngLatBoundsLike, MapStyle } from '@maptiler/sdk';
+import { MapStyle } from '@maptiler/sdk';
+import {
+  DEFAULT_COORDINATES,
+  DEFAULT_ZOOM,
+  ERROR_MESSAGES,
+  JABODETABEK_BOUNDS,
+} from '@/constants/map';
 import { ROAD_STYLE } from '@/constants/roadCoordinates';
 import { transformRequest } from '@/utils/mapUtils';
 
@@ -13,23 +19,6 @@ mapTilerSDK.config.apiKey = 'abcdefghijklmnopqrstuvwxyz';
 interface MapProps {
   center: [number, number];
 }
-
-// Constants
-const DEFAULT_COORDINATES: [number, number] = [-6.2088, 106.8456]; // Jakarta coordinates
-const DEFAULT_ZOOM = 18;
-
-// Expansive bounds for the entire Jakarta area to ensure all routes are visible.
-const JABODETABEK_BOUNDS: LngLatBoundsLike = [
-  [106.4, -6.5], // Southwest
-  [107.2, -6.0], // Northeast
-] as const;
-
-// Error messages
-const ERROR_MESSAGES = {
-  INITIALIZATION: 'Failed to initialize map',
-  LOAD_ERROR: 'Failed to load map. Please try refreshing the page.',
-  INVALID_COORDINATES: 'Invalid coordinates provided',
-} as const;
 
 interface Road {
   name: string;

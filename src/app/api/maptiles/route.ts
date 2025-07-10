@@ -1,22 +1,10 @@
-import { RATE_LIMIT, isRateLimited } from '@/utils/rateLimit';
+import { ALLOWED_PATHS, CACHE_CONFIG, MAX_PATH_LENGTH } from '@/constants/api';
+import { isRateLimited, RATE_LIMIT } from '@/utils/rateLimit';
 import { type NextRequest, NextResponse } from 'next/server';
-import { name as packageName, version as packageVersion } from '../../../../package.json';
-
-// Allowed paths for the proxy
-const ALLOWED_PATHS = ['/maps', '/data', '/tiles', '/fonts', '/geocoding'] as const;
-const MAX_PATH_LENGTH = 256; // Maximum allowed path length
-
-// Cache configuration based on content type
-const CACHE_CONFIG = {
-  TILES: {
-    VECTOR: 60 * 60 * 24 * 14, // 14 days for vector tiles
-    RASTER: 60 * 60 * 24 * 7,  // 7 days for raster tiles
-  },
-  FONTS: 60 * 60 * 24 * 30,    // 30 days for fonts (rarely change)
-  MAPS: 60 * 60,               // 1 hour for map data
-  DATA: 60 * 5,                // 5 minutes for dynamic data
-  GEOCODING: 60 * 30,          // 30 minutes for geocoding results
-} as const;
+import {
+  name as packageName,
+  version as packageVersion,
+} from '../../../../package.json';
 
 // Get User-Agent from npm environment variables
 function getUserAgent(): string {
@@ -33,7 +21,7 @@ function isValidPath(path: string): boolean {
   }
 
   // Check if path starts with allowed prefixes
-  if (!ALLOWED_PATHS.some(allowedPath => path.startsWith(allowedPath))) {
+  if (!ALLOWED_PATHS.some((allowedPath) => path.startsWith(allowedPath))) {
     return false;
   }
 
@@ -46,7 +34,9 @@ function isValidPath(path: string): boolean {
 }
 
 function getClientIp(request: NextRequest): string {
-  return request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown';
+  return (
+    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown'
+  );
 }
 
 function getCacheDuration(path: string): number {
@@ -54,18 +44,18 @@ function getCacheDuration(path: string): number {
   if (path.startsWith('/fonts')) {
     return CACHE_CONFIG.FONTS;
   }
-  
+
   if (path.startsWith('/tiles')) {
     // Vector tiles typically have pbf or mvt extension
     return path.endsWith('.pbf') || path.endsWith('.mvt')
       ? CACHE_CONFIG.TILES.VECTOR
       : CACHE_CONFIG.TILES.RASTER;
   }
-  
+
   if (path.startsWith('/maps')) {
     return CACHE_CONFIG.MAPS;
   }
-  
+
   if (path.startsWith('/data')) {
     return CACHE_CONFIG.DATA;
   }
@@ -73,7 +63,7 @@ function getCacheDuration(path: string): number {
   if (path.startsWith('/geocoding')) {
     return CACHE_CONFIG.GEOCODING;
   }
-  
+
   // Default to short cache for unknown paths
   return CACHE_CONFIG.DATA;
 }
@@ -87,21 +77,21 @@ export async function GET(request: NextRequest) {
     console.warn(`[MapTilerProxy] Rate limit exceeded for IP: ${ip}`);
     return NextResponse.json(
       { error: 'Too many requests' },
-      { 
+      {
         status: 429,
         headers: {
           'Retry-After': String(RATE_LIMIT.BLOCK_DURATION_MS / 1000),
-        }
-      }
+        },
+      },
     );
   }
 
   const apiKey = process.env.MAPTILER_API_KEY;
-  
+
   if (!apiKey) {
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -109,42 +99,40 @@ export async function GET(request: NextRequest) {
   const path = searchParams.get('path');
 
   if (!path || !isValidPath(path)) {
-    return NextResponse.json(
-      { error: 'Invalid request' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 
   try {
     const maptilerUrl = `https://api.maptiler.com${path}${path.includes('?') ? '&' : '?'}key=${apiKey}`;
-    
+
     const response = await fetch(maptilerUrl, {
       headers: {
-        'Origin': process.env.VERCEL_BRANCH_URL ?? process.env.VERCEL_URL as string,
+        Origin:
+          process.env.VERCEL_BRANCH_URL ?? (process.env.VERCEL_URL as string),
         'User-Agent': getUserAgent(),
       },
       // Use Next.js built-in caching with specific durations
       next: {
-        revalidate: getCacheDuration(path)
-      }
+        revalidate: getCacheDuration(path),
+      },
     });
-    
+
     if (!response.ok) {
       throw new Error(`MapTiler API responded with status: ${response.status}`);
     }
 
     const contentType = response.headers.get('content-type') ?? '';
     const cacheDuration = getCacheDuration(path);
-    
+
     if (contentType.includes('application/json')) {
       const data = await response.json();
       return NextResponse.json(data, {
         headers: {
           'cache-control': `public, max-age=${cacheDuration}`,
-        }
+        },
       });
     }
-    
+
     // For non-JSON responses (like images), return the raw response with proper content type
     return new NextResponse(response.body, {
       status: response.status,
@@ -154,10 +142,10 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('[MapTilerProxy] Error:', error instanceof Error ? error.message : 'Unknown error');
-    return NextResponse.json(
-      { error: 'Service unavailable' },
-      { status: 503 }
+    console.error(
+      '[MapTilerProxy] Error:',
+      error instanceof Error ? error.message : 'Unknown error',
     );
+    return NextResponse.json({ error: 'Service unavailable' }, { status: 503 });
   }
-} 
+}

@@ -7,20 +7,16 @@ import MapLoadingScreen from '@/components/app/map/map-loading-screen';
 import MapSimulationCard from '@/components/app/map/map-simulation-card';
 import PreviewMap from '@/components/PreviewMap';
 import { Button } from '@/components/ui/button';
-
-// Constants
-const DEFAULT_LOCATION: [number, number] = [-6.2088, 106.8456]; // Jakarta coordinates
-const GEOLOCATION_OPTIONS = {
-  enableHighAccuracy: true,
-  timeout: 5000,
-  maximumAge: 10000,
-};
-const MAX_RETRIES = 5;
-const RETRY_DELAY = 1000;
-const LOCATION_THRESHOLD = 0.00025; // Approximately 25 meters
-const FALLBACK_TIMEOUT = 30000; // 30 seconds timeout for fallback mechanism
-const PERIODIC_REFRESH = 300000; // Refresh location every 5 minutes
-const UPDATE_DEBOUNCE = 100; // 100ms debounce for location updates
+import {
+  FALLBACK_TIMEOUT,
+  GEOLOCATION_OPTIONS,
+  LOCATION_THRESHOLD,
+  MAX_RETRIES,
+  PERIODIC_REFRESH,
+  RETRY_DELAY,
+  UPDATE_DEBOUNCE,
+} from '@/constants/geolocation';
+import { DEFAULT_COORDINATES } from '@/constants/map';
 
 const useLocation = () => {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(
@@ -146,9 +142,9 @@ const useLocation = () => {
 
       // Don't retry if permission is denied
       if (error.code === error.PERMISSION_DENIED) {
-        setUserLocation(DEFAULT_LOCATION);
-        setLastCoordinate(DEFAULT_LOCATION);
-        fetchStreetAddress(DEFAULT_LOCATION[0], DEFAULT_LOCATION[1]);
+        setUserLocation(DEFAULT_COORDINATES);
+        setLastCoordinate(DEFAULT_COORDINATES);
+        fetchStreetAddress(DEFAULT_COORDINATES[0], DEFAULT_COORDINATES[1]);
         return;
       }
 
@@ -158,16 +154,16 @@ const useLocation = () => {
         setRetryCount((prev) => prev + 1);
         retryTimeoutId = setTimeout(startLocationWatch, delay);
       } else {
-        setUserLocation(DEFAULT_LOCATION);
-        setLastCoordinate(DEFAULT_LOCATION);
-        fetchStreetAddress(DEFAULT_LOCATION[0], DEFAULT_LOCATION[1]);
+        setUserLocation(DEFAULT_COORDINATES);
+        setLastCoordinate(DEFAULT_COORDINATES);
+        fetchStreetAddress(DEFAULT_COORDINATES[0], DEFAULT_COORDINATES[1]);
       }
     };
 
     const startLocationWatch = () => {
       if (!mounted || !navigator.geolocation) {
         setLocationError('Geolokasi tidak didukung oleh browser Anda.');
-        setUserLocation(DEFAULT_LOCATION);
+        setUserLocation(DEFAULT_COORDINATES);
         return;
       }
 
@@ -191,7 +187,7 @@ const useLocation = () => {
 
         // Set up fallback mechanism
         fallbackTimeoutId = setTimeout(() => {
-          if (!userLocation || userLocation === DEFAULT_LOCATION) {
+          if (!userLocation || userLocation === DEFAULT_COORDINATES) {
             console.warn('Location watch fallback triggered');
             // Try one more time with less strict options
             navigator.geolocation.getCurrentPosition(
@@ -223,9 +219,9 @@ const useLocation = () => {
         if (error instanceof GeolocationPositionError) {
           handleError(error);
         }
-        setUserLocation(DEFAULT_LOCATION);
-        setLastCoordinate(DEFAULT_LOCATION);
-        fetchStreetAddress(DEFAULT_LOCATION[0], DEFAULT_LOCATION[1]);
+        setUserLocation(DEFAULT_COORDINATES);
+        setLastCoordinate(DEFAULT_COORDINATES);
+        fetchStreetAddress(DEFAULT_COORDINATES[0], DEFAULT_COORDINATES[1]);
       }
     };
 
