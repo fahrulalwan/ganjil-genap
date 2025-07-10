@@ -4,7 +4,6 @@ import { type FC, Suspense, useCallback, useEffect, useState } from 'react';
 import MapFloatingInfoCard from '@/components/app/map/map-floating-info-card';
 import MapLoadingScreen from '@/components/app/map/map-loading-screen';
 import PreviewMap from '@/components/PreviewMap';
-import { Button } from '@/components/ui/button';
 import {
   GEOLOCATION_OPTIONS,
   LOCATION_THRESHOLD,
@@ -14,7 +13,6 @@ import {
 } from '@/constants/geolocation';
 import { DEFAULT_COORDINATES } from '@/constants/map';
 import type { Road } from '@/types/road';
-import MapSimulationCard from './map-simulation-card';
 
 const useLocation = () => {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(
@@ -204,8 +202,8 @@ const MapView: FC<MapViewProps> = ({ roads }) => {
     fetchStreetAddress,
   } = useLocation();
 
-  const [simulationEnabled, setSimulationEnabled] = useState(false);
-  const [simulatedTime, setSimulatedTime] = useState(new Date());
+  // const [simulationEnabled, setSimulationEnabled] = useState(false);
+  // const [simulatedTime, setSimulatedTime] = useState(new Date());
 
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
@@ -221,35 +219,35 @@ const MapView: FC<MapViewProps> = ({ roads }) => {
 
   // Update current time every minute
   useEffect(() => {
-    if (simulationEnabled) {
-      setCurrentTime(simulatedTime);
-      return;
-    }
+    // if (simulationEnabled) {
+    //   setCurrentTime(simulatedTime);
+    //   return;
+    // }
 
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
-  }, [simulationEnabled, simulatedTime]);
+  }, []);
 
   // Add simulation controls
-  const handleSimulationTimeChange = (
-    hours: number,
-    minutes: number,
-    dayOffset = 0,
-  ) => {
-    const newTime = new Date();
-    // Set to next Saturday if dayOffset is 6, or next Sunday if 7
-    if (dayOffset === 6 || dayOffset === 7) {
-      const currentDay = newTime.getDay();
-      const daysUntilWeekend = dayOffset - currentDay;
-      newTime.setDate(
-        newTime.getDate() +
-          (daysUntilWeekend > 0 ? daysUntilWeekend : daysUntilWeekend + 7),
-      );
-    }
-    newTime.setHours(hours);
-    newTime.setMinutes(minutes);
-    setSimulatedTime(newTime);
-  };
+  // const handleSimulationTimeChange = (
+  //   hours: number,
+  //   minutes: number,
+  //   dayOffset = 0,
+  // ) => {
+  //   const newTime = new Date();
+  //   // Set to next Saturday if dayOffset is 6, or next Sunday if 7
+  //   if (dayOffset === 6 || dayOffset === 7) {
+  //     const currentDay = newTime.getDay();
+  //     const daysUntilWeekend = dayOffset - currentDay;
+  //     newTime.setDate(
+  //       newTime.getDate() +
+  //         (daysUntilWeekend > 0 ? daysUntilWeekend : daysUntilWeekend + 7),
+  //     );
+  //   }
+  //   newTime.setHours(hours);
+  //   newTime.setMinutes(minutes);
+  //   setSimulatedTime(newTime);
+  // };
 
   if (isLoading) {
     return <MapLoadingScreen />;
